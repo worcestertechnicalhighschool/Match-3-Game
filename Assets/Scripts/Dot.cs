@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Dot : MonoBehaviour
 {
@@ -20,10 +21,17 @@ public class Dot : MonoBehaviour
     public float swipeAngle = 0; // Angle of the swipe
     public float swipeResist = 1f; // Resistance threshold for swipe detection
     private FindMatches findMatches; // Reference to the FindMatches script
+    [Header("Power Up Variables")]
+    public bool isColumnBomb; // Indicates if this dot is a column bomb
+    public bool isRowBomb; // Indicates if this dot is a row bomb
+    public GameObject rowArrow; // Prefab for the row arrow visual
+    public GameObject columnArrow; // Prefab for the column arrow visual
 
     // Start is called before the first frame update
     void Start()
     {
+        isColumnBomb = false;
+        isRowBomb = false;
         board = FindObjectOfType<Board>(); // Find and reference the Board
         findMatches = FindObjectOfType<FindMatches>(); // Reference to FindMatches
         // Uncomment to initialize target positions and row/column
@@ -34,7 +42,14 @@ public class Dot : MonoBehaviour
         previousRow = row;
         previousColumn = column; */
     }
-
+    // Debugging: Handles right-click to create a column bomb
+    private void OnMouseOver() {
+        if (Input.GetMouseButtonDown(1)) {
+            isColumnBomb = true; // Set column bomb flag
+            GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
+            arrow.transform.parent = this.transform; // Set arrow as child of this dot
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -129,7 +144,7 @@ public class Dot : MonoBehaviour
             board.currentState = GameState.move; // Reset state if swipe is too short
         }
     }
-
+    // Move the pieces based on the swipe direction calculated
     void MovePieces() {
         // Determine the direction of the swipe and move the dots accordingly
         if(swipeAngle > -45 && swipeAngle <= 45 && column < board.width - 1) {
@@ -163,7 +178,7 @@ public class Dot : MonoBehaviour
         }
         StartCoroutine(CheckMoveCo()); // Start the coroutine to check the move validity
     }
-
+    // Find matches with adjacent dots
     void FindMatches() {
         // Check for matches with adjacent dots
         if (column > 0 && column < board.width - 1) {
@@ -178,6 +193,7 @@ public class Dot : MonoBehaviour
                 }
             }
         }
+        // Check for matches with dots above and below
         if (row > 0 && row < board.height - 1) {
             GameObject upDot1 = board.allDots[column, row + 1]; // Dot above
             GameObject downDot1 = board.allDots[column, row - 1]; // Dot below

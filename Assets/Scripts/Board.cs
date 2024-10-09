@@ -21,6 +21,7 @@ public class Board : MonoBehaviour
     public GameObject[] dots; // Array of dot prefabs
     public GameObject[,] allDots; // 2D array to hold all dots on the board
     private FindMatches findMatches; // Reference to FindMatches script
+    public GameObject destroyEffect;
 
     // Start is called before the first frame update
     void Start()
@@ -89,6 +90,8 @@ public class Board : MonoBehaviour
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
             findMatches.currentMatches.Remove(allDots[column, row]); // Remove from current matches
+            GameObject particle = Instantiate(destroyEffect, allDots[column, row].transform.position, UnityEngine.Quaternion.identity);
+            Destroy(particle, .5f);
             Destroy(allDots[column, row]); // Destroy the matched dot
             allDots[column, row] = null; // Set the array position to null
         }
