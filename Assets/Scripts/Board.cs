@@ -20,6 +20,7 @@ public class Board : MonoBehaviour
     private BackgroundTile[,] allTiles; // 2D array to hold all background tiles
     public GameObject[] dots; // Array of dot prefabs
     public GameObject[,] allDots; // 2D array to hold all dots on the board
+    public Dot currentDot;
     private FindMatches findMatches; // Reference to FindMatches script
     public GameObject destroyEffect;
 
@@ -89,6 +90,10 @@ public class Board : MonoBehaviour
     // Destroy matched dots at the given position
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
+            // How many elements are in the matched pieces list from find matches?
+            if (findMatches.currentMatches.Count == 4 || findMatches.currentMatches.Count == 7) {
+                findMatches.CheckBombs();
+            }
             findMatches.currentMatches.Remove(allDots[column, row]); // Remove from current matches
             GameObject particle = Instantiate(destroyEffect, allDots[column, row].transform.position, UnityEngine.Quaternion.identity);
             Destroy(particle, .5f);
@@ -166,6 +171,8 @@ public class Board : MonoBehaviour
             yield return new WaitForSeconds(.2f); // Wait before checking for matches
             DestroyMatches(); // Destroy any new matches
         }
+        findMatches.currentMatches.Clear();
+        currentDot = null;
         yield return new WaitForSeconds(.2f); // Wait before allowing moves again
         currentState = GameState.move; // Set state to allow moves
     }
