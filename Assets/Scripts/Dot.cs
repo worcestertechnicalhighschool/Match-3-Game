@@ -22,10 +22,12 @@ public class Dot : MonoBehaviour
     public float swipeResist = 1f; // Resistance threshold for swipe detection
     private FindMatches findMatches; // Reference to the FindMatches script
     [Header("Power Up Variables")]
+    public bool isColorBomb;
     public bool isColumnBomb; // Indicates if this dot is a column bomb
     public bool isRowBomb; // Indicates if this dot is a row bomb
     public GameObject rowArrow; // Prefab for the row arrow visual
     public GameObject columnArrow; // Prefab for the column arrow visual
+    public GameObject colorBomb;
 
     // Start is called before the first frame update
     void Start()
@@ -34,21 +36,14 @@ public class Dot : MonoBehaviour
         isRowBomb = false;
         board = FindObjectOfType<Board>(); // Find and reference the Board
         findMatches = FindObjectOfType<FindMatches>(); // Reference to FindMatches
-        // Uncomment to initialize target positions and row/column
-        /* targetX = (int)transform.position.x; 
-        targetY = (int)transform.position.y;
-        row = targetY;
-        column = targetX;
-        previousRow = row;
-        previousColumn = column; */
     }
 
     // Debugging: Handles right-click to create a column bomb
     private void OnMouseOver() {
         if (Input.GetMouseButtonDown(1)) {
-            isColumnBomb = true; // Set column bomb flag
-            GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
-            arrow.transform.parent = this.transform; // Set arrow as child of this dot
+            isColorBomb = true; // Set column bomb flag
+            GameObject color = Instantiate(colorBomb, transform.position, Quaternion.identity);
+            color.transform.parent = this.transform; // Set arrow as child of this dot
         }
     }
     // Update is called once per frame
@@ -93,6 +88,13 @@ public class Dot : MonoBehaviour
 
     // Coroutine to check the validity of the move
     public IEnumerator CheckMoveCo() {
+        if (isColorBomb) {
+            findMatches.MatchPiecesOfColor(otherDot.tag);
+            isMatched = true;
+        } else if (otherDot.GetComponent<Dot>().isColorBomb) {
+            findMatches.MatchPiecesOfColor(this.gameObject.tag);
+            otherDot.GetComponent<Dot>().isMatched = true;
+        }
         yield return new WaitForSeconds(.2f); // Wait before checking
         if (otherDot != null) {
             if (!isMatched && !otherDot.GetComponent<Dot>().isMatched) {

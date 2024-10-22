@@ -21,7 +21,7 @@ public class FindMatches : MonoBehaviour
 
     // Coroutine to find all matches in the board
     private IEnumerator FindAllMatchesCo() {
-        yield return new WaitForSeconds(.2f); // Wait for a brief moment before checking for matches
+        yield return new WaitForSeconds(.1f); // Wait for a brief moment before checking for matches
         for (int i = 0; i < board.width; i++) { // Loop through each column
             for (int j = 0; j < board.height; j++) { // Loop through each row
                 GameObject currentDot = board.allDots[i, j]; // Get the current dot
