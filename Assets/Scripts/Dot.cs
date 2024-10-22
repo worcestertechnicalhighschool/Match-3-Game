@@ -22,12 +22,10 @@ public class Dot : MonoBehaviour
     public float swipeResist = 1f; // Resistance threshold for swipe detection
     private FindMatches findMatches; // Reference to the FindMatches script
     [Header("Power Up Variables")]
-    public bool isColorBomb;
     public bool isColumnBomb; // Indicates if this dot is a column bomb
     public bool isRowBomb; // Indicates if this dot is a row bomb
     public GameObject rowArrow; // Prefab for the row arrow visual
     public GameObject columnArrow; // Prefab for the column arrow visual
-    public GameObject colorBomb;
 
     // Start is called before the first frame update
     void Start()
@@ -44,24 +42,19 @@ public class Dot : MonoBehaviour
         previousRow = row;
         previousColumn = column; */
     }
-    // Debug method.
+
+    // Debugging: Handles right-click to create a column bomb
     private void OnMouseOver() {
         if (Input.GetMouseButtonDown(1)) {
-            isColorBomb = true; // Set column bomb flag
-            GameObject color = Instantiate(colorBomb, transform.position, Quaternion.identity);
-            color.transform.parent = this.transform; // Set arrow as child of this dot
+            isColumnBomb = true; // Set column bomb flag
+            GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
+            arrow.transform.parent = this.transform; // Set arrow as child of this dot
         }
     }
     // Update is called once per frame
     void Update()
     {
-        /* If the dot is matched, change its color for visual feedback
-        if (isMatched) {
-            SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
-            mySprite.color = new Color(0f, 0f, 0f, .2f); // Change color for matched dots
-        }
-
-        Update target position based on current column and row */
+        // Update target position based on current column and row
         targetX = column;
         targetY = row;
 
@@ -100,16 +93,7 @@ public class Dot : MonoBehaviour
 
     // Coroutine to check the validity of the move
     public IEnumerator CheckMoveCo() {
-        if (isColorBomb) {
-            // This piece is a color bomb, and the other piece is the color to destroy.
-            findMatches.MatchPiecesOfColor(otherDot.tag);
-            isMatched = true;
-        } else if (otherDot.GetComponent<Dot>().isColorBomb){
-            // The other piece is a color bomb, and this piece is the color to destroy.
-            findMatches.MatchPiecesOfColor(this.gameObject.tag);
-            otherDot.GetComponent<Dot>().isMatched = true;
-        }
-        yield return new WaitForSeconds(.1f); // Wait before checking
+        yield return new WaitForSeconds(.2f); // Wait before checking
         if (otherDot != null) {
             if (!isMatched && !otherDot.GetComponent<Dot>().isMatched) {
                 // If no match, revert the move
@@ -117,14 +101,13 @@ public class Dot : MonoBehaviour
                 otherDot.GetComponent<Dot>().column = column; // Revert other dot's column
                 row = previousRow; // Restore previous row
                 column = previousColumn; // Restore previous column
-                yield return new WaitForSeconds(.2f); // Wait for destruction to complete
                 board.currentDot = null;
                 board.currentState = GameState.move; // Allow moving again
             } else {
                 // If there is a match, destroy matched dots
                 board.DestroyMatches(); // Trigger match destruction
+                yield return new WaitForSeconds(.2f); // Wait for destruction to complete
             }
-            // otherDot = null; // Reset otherDot reference
         }
     }
 
@@ -157,6 +140,7 @@ public class Dot : MonoBehaviour
             board.currentState = GameState.move; // Reset state if swipe is too short
         }
     }
+
     // Move the pieces based on the swipe direction calculated
     void MovePieces() {
         // Determine the direction of the swipe and move the dots accordingly
@@ -191,6 +175,7 @@ public class Dot : MonoBehaviour
         }
         StartCoroutine(CheckMoveCo()); // Start the coroutine to check the move validity
     }
+
     // Find matches with adjacent dots
     void FindMatches() {
         // Check for matches with adjacent dots
@@ -220,16 +205,14 @@ public class Dot : MonoBehaviour
             }
         }
     }
-
     public void MakeRowBomb() {
-        isRowBomb = true; // Set row bomb flag
+        isRowBomb = true;
         GameObject arrow = Instantiate(rowArrow, transform.position, Quaternion.identity);
-        arrow.transform.parent = this.transform; // Set arrow as child of this dot
+        arrow.transform.parent = this.transform;
     }
-
     public void MakeColumnBomb() {
-        isColumnBomb = true; // Set column bomb flag
+        isColumnBomb = true;
         GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
-        arrow.transform.parent = this.transform; // Set arrow as child of this dot
+        arrow.transform.parent = this.transform;
     }
 }

@@ -20,9 +20,9 @@ public class Board : MonoBehaviour
     private BackgroundTile[,] allTiles; // 2D array to hold all background tiles
     public GameObject[] dots; // Array of dot prefabs
     public GameObject[,] allDots; // 2D array to hold all dots on the board
-    public Dot currentDot;
     private FindMatches findMatches; // Reference to FindMatches script
     public GameObject destroyEffect;
+    public Dot currentDot;
 
     // Start is called before the first frame update
     void Start()
@@ -90,7 +90,6 @@ public class Board : MonoBehaviour
     // Destroy matched dots at the given position
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
-            // How many elements are in the matched pieces list from find matches?
             if (findMatches.currentMatches.Count == 4 || findMatches.currentMatches.Count == 7) {
                 findMatches.CheckBombs();
             }
@@ -172,7 +171,6 @@ public class Board : MonoBehaviour
             DestroyMatches(); // Destroy any new matches
         }
         findMatches.currentMatches.Clear();
-        currentDot = null;
         yield return new WaitForSeconds(.2f); // Wait before allowing moves again
         currentState = GameState.move; // Set state to allow moves
     }

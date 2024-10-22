@@ -49,18 +49,21 @@ public class FindMatches : MonoBehaviour
                                 }
                                 // Add left dot to current matches if not already added
                                 if (!currentMatches.Contains(leftDot)) {
+                                    currentMatches.Add(leftDot);
                                     currentMatches.Add(leftDot); // Add left dot if not already present
                                 }
                                 leftDot.GetComponent<Dot>().isMatched = true; // Mark left dot as matched
                                 
                                 // Add right dot to current matches if not already added
                                 if (!currentMatches.Contains(rightDot)) {
+                                    currentMatches.Add(rightDot);
                                     currentMatches.Add(rightDot); // Add right dot if not already present
                                 }
                                 rightDot.GetComponent<Dot>().isMatched = true; // Mark right dot as matched
                                 
                                 // Add current dot to matches if not already added
                                 if (!currentMatches.Contains(currentDot)) {
+                                    currentMatches.Add(currentDot);
                                     currentMatches.Add(currentDot); // Add current dot if not already present
                                 }
                                 currentDot.GetComponent<Dot>().isMatched = true; // Mark current dot as matched
@@ -92,18 +95,21 @@ public class FindMatches : MonoBehaviour
                                 upDot.GetComponent<Dot>().isMatched = true; // Mark upper dot as matched
                                 // Add upper dot to current matches if not already added
                                 if (!currentMatches.Contains(upDot)) {
+                                    currentMatches.Add(upDot);
                                     currentMatches.Add(upDot); // Add upper dot if not already present
                                 }
                                 
                                 downDot.GetComponent<Dot>().isMatched = true; // Mark lower dot as matched
                                 // Add lower dot to current matches if not already added
                                 if (!currentMatches.Contains(downDot)) {
+                                    currentMatches.Add(downDot);
                                     currentMatches.Add(downDot); // Add lower dot if not already present
                                 }
                                 
                                 currentDot.GetComponent<Dot>().isMatched = true; // Mark current dot as matched
                                 // Add current dot to matches if not already added
                                 if (!currentMatches.Contains(currentDot)) {
+                                    currentMatches.Add(currentDot);
                                     currentMatches.Add(currentDot); // Add current dot if not already present
                                 }
                             }
@@ -116,11 +122,8 @@ public class FindMatches : MonoBehaviour
     public void MatchPiecesOfColor(string color) {
         for (int i = 0; i < board.width; i++) {
             for (int j = 0; j < board.height; j++) {
-                // Check if that piece exists
                 if (board.allDots[i, j] != null) {
-                    // Check the tag on the dot.
                     if (board.allDots[i, j].tag == color) {
-                        // Set that dot to be matched.
                         board.allDots[i, j].GetComponent<Dot>().isMatched = true;
                     }
                 }
@@ -147,33 +150,25 @@ public class FindMatches : MonoBehaviour
         }
         return dots;
     }
-
     public void CheckBombs() {
-        // Did the player move something?
         if (board.currentDot != null) {
-            // Is the piece they moved matched?
             if (board.currentDot.isMatched) {
-                // Make it unmatched.
                 board.currentDot.isMatched = false;
-                if ((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45)
-                || (board.currentDot.swipeAngle < -135 || board.currentDot.swipeAngle >= 135)) {
-                    // Make a row bomb.
+                if ((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45) ||
+                (board.currentDot.swipeAngle < -135 || board.currentDot.swipeAngle >= 135)) {
                     board.currentDot.MakeRowBomb();
                 } else {
-                    // Make a column bomb.
                     board.currentDot.MakeColumnBomb();
                 }
             } else if (board.currentDot.otherDot != null) {
                 Dot otherDot = board.currentDot.otherDot.GetComponent<Dot>();
                 if (otherDot.isMatched) {
                     otherDot.isMatched = false;
-                    if ((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45)
-                || (board.currentDot.swipeAngle < -135 || board.currentDot.swipeAngle >= 135)) {
-                    // Make a row bomb.
-                    otherDot.MakeRowBomb();
-                } else {
-                    // Make a column bomb.
-                    otherDot.MakeColumnBomb();
+                    if ((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45) ||
+                    (board.currentDot.swipeAngle < -135 || board.currentDot.swipeAngle >= 135)) {
+                        otherDot.MakeRowBomb();
+                    } else {
+                        otherDot.MakeColumnBomb();
                     }
                 }
             }
