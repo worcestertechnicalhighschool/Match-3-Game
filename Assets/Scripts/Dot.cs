@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,45 +8,49 @@ using UnityEngine.UIElements;
 public class Dot : MonoBehaviour
 {
     [Header("Board Variables")]
-    public int column; // Current column of the dot
-    public int row; // Current row of the dot
-    public int previousColumn; // Previous column (for reverting moves)
-    public int previousRow; // Previous row (for reverting moves)
-    public int targetX; // Target X position for movement
-    public int targetY; // Target Y position for movement
-    public bool isMatched = false; // Flag to indicate if the dot is part of a match
-    private Board board; // Reference to the Board instance
+    public int column; // Current column index of the dot on the board
+    public int row; // Current row index of the dot on the board
+    public int previousColumn; // Previous column index for reverting moves
+    public int previousRow; // Previous row index for reverting moves
+    public int targetX; // Target X position for smooth movement
+    public int targetY; // Target Y position for smooth movement
+    public bool isMatched = false; // Flag indicating if the dot is part of a match
+    private Board board; // Reference to the Board instance for accessing board properties
     public GameObject otherDot; // Reference to the dot being swapped with
-    private Vector2 firstTouchPosition; // Position of the first touch for swipe detection
-    private Vector2 finalTouchPosition; // Position of the final touch for swipe detection
-    private Vector2 tempPosition; // Temporary position used for movement
-    public float swipeAngle = 0; // Angle of the swipe for direction detection
+    private UnityEngine.Vector2 firstTouchPosition; // Position of the first touch for swipe detection
+    private UnityEngine.Vector2 finalTouchPosition; // Position of the final touch for swipe detection
+    private UnityEngine.Vector2 tempPosition; // Temporary position used for smooth movement
+    public float swipeAngle = 0; // Angle of the swipe for determining movement direction
     public float swipeResist = 1f; // Resistance threshold for swipe detection
-    private FindMatches findMatches; // Reference to the FindMatches script for match checking
+    private FindMatches findMatches; // Reference to the FindMatches script for checking matches
     
     [Header("Power Up Variables")]
-    public bool isColorBomb; // Flag for color bomb power-up
-    public bool isColumnBomb; // Flag for column bomb power-up
-    public bool isRowBomb; // Flag for row bomb power-up
-    public GameObject rowArrow; // Prefab for the visual representation of the row bomb
-    public GameObject columnArrow; // Prefab for the visual representation of the column bomb
-    public GameObject colorBomb; // Prefab for the visual representation of the color bomb
+    public bool isColorBomb; // Flag indicating if this dot is a color bomb power-up
+    public bool isColumnBomb; // Flag indicating if this dot is a column bomb power-up
+    public bool isRowBomb; // Flag indicating if this dot is a row bomb power-up
+    public bool isAdjacentBomb; // Flag indicating if this dot is an adjacent bomb
+    public GameObject rowArrow; // Prefab for visual representation of the row bomb
+    public GameObject columnArrow; // Prefab for visual representation of the column bomb
+    public GameObject colorBomb; // Prefab for visual representation of the color bomb
+    public GameObject adjacentMarker; // Prefab for visual representation of the adjacent bomb
 
     // Start is called before the first frame update
     void Start()
     {
         isColumnBomb = false; // Initialize column bomb status
         isRowBomb = false; // Initialize row bomb status
+        isColorBomb = false; // Initialize color bomb status
+        isAdjacentBomb = false; // Initialize adjacent bomb status
         board = FindObjectOfType<Board>(); // Find and reference the Board in the scene
         findMatches = FindObjectOfType<FindMatches>(); // Reference to the FindMatches instance
     }
 
-    // Handles right-click to create a color bomb for debugging purposes
+    // Handles right-click to create an adjacent bomb for debugging purposes
     private void OnMouseOver() {
         if (Input.GetMouseButtonDown(1)) {
-            isColorBomb = true; // Set color bomb flag to true
-            GameObject color = Instantiate(colorBomb, transform.position, Quaternion.identity);
-            color.transform.parent = this.transform; // Set the color bomb as a child of this dot
+            isAdjacentBomb = true; // Set adjacent bomb flag to true
+            GameObject marker = Instantiate(adjacentMarker, transform.position, UnityEngine.Quaternion.identity);
+            marker.transform.parent = this.transform; // Set the adjacent bomb marker as a child of this dot
         }
     }
 
@@ -53,46 +58,47 @@ public class Dot : MonoBehaviour
     void Update()
     {
         // Update the target position based on the current column and row
-        targetX = column;
-        targetY = row;
+        targetX = column; // Update target X based on the column
+        targetY = row; // Update target Y based on the row
 
         // Move towards the target X position
         if (Mathf.Abs(targetX - transform.position.x) > .1) {
-            tempPosition = new Vector2(targetX, transform.position.y); // Set new position for X
-            transform.position = Vector2.Lerp(transform.position, tempPosition, .1f); // Smooth movement towards the target
+            tempPosition = new UnityEngine.Vector2(targetX, transform.position.y); // Set new position for X
+            transform.position = UnityEngine.Vector2.Lerp(transform.position, tempPosition, .1f); // Smooth movement towards the target
             // Update the board reference if this dot is in the new position
             if (board.allDots[column, row] != this.gameObject) {
-                board.allDots[column, row] = this.gameObject; // Update board array
+                board.allDots[column, row] = this.gameObject; // Update board array with the current dot
             }
             findMatches.FindAllMatches(); // Check for matches after moving
         } else {
             // Directly set position if close enough to target
-            tempPosition = new Vector2(targetX, transform.position.y);
+            tempPosition = new UnityEngine.Vector2(targetX, transform.position.y);
             transform.position = tempPosition; // Set to target position
-            board.allDots[column, row] = this.gameObject; // Update board reference
+            board.allDots[column, row] = this.gameObject; // Update board reference with the current dot
         }
 
         // Move towards the target Y position
         if (Mathf.Abs(targetY - transform.position.y) > .1) {
-            tempPosition = new Vector2(transform.position.x, targetY); // Set new position for Y
-            transform.position = Vector2.Lerp(transform.position, tempPosition, .1f); // Smooth movement towards target
+            tempPosition = new UnityEngine.Vector2(transform.position.x, targetY); // Set new position for Y
+            transform.position = UnityEngine.Vector2.Lerp(transform.position, tempPosition, .1f); // Smooth movement towards target
             // Update the board reference if this dot is in the new position
             if (board.allDots[column, row] != this.gameObject) {
-                board.allDots[column, row] = this.gameObject; // Update board array
+                board.allDots[column, row] = this.gameObject; // Update board array with the current dot
             }
             findMatches.FindAllMatches(); // Check for matches after moving
         } else {
             // Directly set position if close enough to target
-            tempPosition = new Vector2(transform.position.x, targetY);
+            tempPosition = new UnityEngine.Vector2(transform.position.x, targetY);
             transform.position = tempPosition; // Set to target position
-            board.allDots[column, row] = this.gameObject; // Update board reference
+            board.allDots[column, row] = this.gameObject; // Update board reference with the current dot
         }
     }
 
-    // Coroutine to check the validity of the move
+    // Coroutine to check the validity of the move after a swipe
     public IEnumerator CheckMoveCo() {
+        // Check for color bomb matches
         if (isColorBomb) {
-            findMatches.MatchPiecesOfColor(otherDot.tag); // Match pieces of the same color
+            findMatches.MatchPiecesOfColor(otherDot.tag); // Match pieces of the same color as the other dot
             isMatched = true; // Mark current dot as matched
         } else if (otherDot.GetComponent<Dot>().isColorBomb) {
             findMatches.MatchPiecesOfColor(this.gameObject.tag); // Match pieces of the current dot's color
@@ -104,15 +110,15 @@ public class Dot : MonoBehaviour
         if (otherDot != null) {
             if (!isMatched && !otherDot.GetComponent<Dot>().isMatched) {
                 // If no match is found, revert the move
-                otherDot.GetComponent<Dot>().row = row; // Revert the other dot's row
-                otherDot.GetComponent<Dot>().column = column; // Revert the other dot's column
-                row = previousRow; // Restore previous row
-                column = previousColumn; // Restore previous column
+                otherDot.GetComponent<Dot>().row = row; // Revert the other dot's row to its previous position
+                otherDot.GetComponent<Dot>().column = column; // Revert the other dot's column to its previous position
+                row = previousRow; // Restore the previous row for the current dot
+                column = previousColumn; // Restore the previous column for the current dot
                 board.currentDot = null; // Clear the current dot reference
                 board.currentState = GameState.move; // Allow player to move again
             } else {
-                // If there is a match, destroy matched dots
-                board.DestroyMatches(); // Trigger match destruction process
+                // If there is a match, trigger destruction of matched dots
+                board.DestroyMatches(); // Start the match destruction process
                 yield return new WaitForSeconds(.2f); // Wait for destruction to complete
             }
         }
@@ -129,7 +135,7 @@ public class Dot : MonoBehaviour
     private void OnMouseUp() {
         if (board.currentState == GameState.move) {
             finalTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); // Get final touch position
-            CalculateAngle(); // Calculate swipe angle and direction
+            CalculateAngle(); // Calculate swipe angle and direction based on touch positions
         }
     }
 
@@ -137,50 +143,44 @@ public class Dot : MonoBehaviour
     void CalculateAngle() {
         // Check if swipe distance exceeds the resistance threshold
         if (Mathf.Abs(finalTouchPosition.y - firstTouchPosition.y) > swipeResist || Mathf.Abs(finalTouchPosition.x - firstTouchPosition.x) > swipeResist) {
+            board.currentState = GameState.wait; // Change state to wait while processing the move
             // Calculate the swipe angle in degrees
             swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y, finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             Debug.Log(swipeAngle); // Log the angle for debugging
             MovePieces(); // Move the pieces based on calculated swipe direction
-            board.currentState = GameState.wait; // Change state to wait while processing the move
-            board.currentDot = this; // Set current dot reference
+            board.currentDot = this; // Set the current dot reference for tracking
         } else {
-            board.currentState = GameState.move; // Reset state if swipe is too short
+            board.currentState = GameState.move; // Reset state if swipe distance is too short
         }
+    }
+
+    // Move the pieces in the specified direction based on the swipe
+    void MovePiecesActual(UnityEngine.Vector2 direction) {
+        otherDot = board.allDots[column + (int) direction.x, row + (int) direction.y]; // Get the dot in the direction of the swipe
+        previousRow = row; // Store the current row for reverting moves
+        previousColumn = column; // Store the current column for reverting moves
+        // Update the positions of the current and other dots
+        otherDot.GetComponent<Dot>().column += -1 * (int) direction.x; // Update other dot's column
+        otherDot.GetComponent<Dot>().row += -1 * (int) direction.y; // Update other dot's row
+        column += (int) direction.x; // Update current dot's column
+        row += (int) direction.y; // Update current dot's row
+        StartCoroutine(CheckMoveCo()); // Start checking the move's validity
     }
 
     // Move the pieces based on the swipe direction
     void MovePieces() {
         // Determine the direction of the swipe and move the dots accordingly
         if (swipeAngle > -45 && swipeAngle <= 45 && column < board.width - 1) {
-            // Right Swipe
-            otherDot = board.allDots[column + 1, row]; // Get the dot to the right
-            previousRow = row; // Save previous row
-            previousColumn = column; // Save previous column
-            otherDot.GetComponent<Dot>().column -= 1; // Move that dot left
-            column += 1; // Update current dot's column
+            MovePiecesActual(UnityEngine.Vector2.right); // Move right
         } else if (swipeAngle > 45 && swipeAngle <= 135 && row < board.height - 1) {
-            // Up Swipe
-            otherDot = board.allDots[column, row + 1]; // Get the dot above
-            previousRow = row; // Save previous row
-            previousColumn = column; // Save previous column
-            otherDot.GetComponent<Dot>().row -= 1; // Move that dot down
-            row += 1; // Update current dot's row
+            MovePiecesActual(UnityEngine.Vector2.up); // Move up
         } else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0) {
-            // Left Swipe
-            otherDot = board.allDots[column - 1, row]; // Get the dot to the left
-            previousRow = row; // Save previous row
-            previousColumn = column; // Save previous column
-            otherDot.GetComponent<Dot>().column += 1; // Move that dot right
-            column -= 1; // Update current dot's column
+            MovePiecesActual(UnityEngine.Vector2.left); // Move left
         } else if (swipeAngle < -45 && swipeAngle >= -135 && row > 0) {
-            // Down Swipe
-            otherDot = board.allDots[column, row - 1]; // Get the dot below
-            previousRow = row; // Save previous row
-            previousColumn = column; // Save previous column
-            otherDot.GetComponent<Dot>().row += 1; // Move that dot up
-            row -= 1; // Update current dot's row
+            MovePiecesActual(UnityEngine.Vector2.down); // Move down
+        } else {
+            board.currentState = GameState.move; // Reset state if swipe is invalid
         }
-        StartCoroutine(CheckMoveCo()); // Start the coroutine to check move validity
     }
 
     // Find matches with adjacent dots
@@ -217,14 +217,28 @@ public class Dot : MonoBehaviour
     // Method to create a row bomb power-up
     public void MakeRowBomb() {
         isRowBomb = true; // Set row bomb flag
-        GameObject arrow = Instantiate(rowArrow, transform.position, Quaternion.identity);
+        GameObject arrow = Instantiate(rowArrow, transform.position, UnityEngine.Quaternion.identity);
         arrow.transform.parent = this.transform; // Set arrow as a child of this dot
     }
 
     // Method to create a column bomb power-up
     public void MakeColumnBomb() {
         isColumnBomb = true; // Set column bomb flag
-        GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
+        GameObject arrow = Instantiate(columnArrow, transform.position, UnityEngine.Quaternion.identity);
         arrow.transform.parent = this.transform; // Set arrow as a child of this dot
+    }
+
+    // Method to create a color bomb power-up
+    public void MakeColorBomb() {
+        isColorBomb = true; // Set color bomb flag
+        GameObject color = Instantiate(colorBomb, transform.position, UnityEngine.Quaternion.identity);
+        color.transform.parent = this.transform; // Set color bomb as a child of this dot
+    }
+
+    // Method to create an adjacent bomb power-up
+    public void MakeAdjacentBomb() {
+        isAdjacentBomb = true; // Set adjacent bomb flag to true
+        GameObject marker = Instantiate(adjacentMarker, transform.position, UnityEngine.Quaternion.identity);
+        marker.transform.parent = this.transform; // Set the adjacent bomb marker as a child of this dot
     }
 }
