@@ -12,6 +12,7 @@ TagManager:
   - Red Dot
   - White Dot
   - Yellow Dot
+  - Teal Dot
   layers:
   - Default
   - TransparentFX

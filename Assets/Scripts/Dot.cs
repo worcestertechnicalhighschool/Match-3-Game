@@ -156,15 +156,29 @@ public class Dot : MonoBehaviour
 
     // Move the pieces in the specified direction based on the swipe
     void MovePiecesActual(UnityEngine.Vector2 direction) {
-        otherDot = board.allDots[column + (int) direction.x, row + (int) direction.y]; // Get the dot in the direction of the swipe
-        previousRow = row; // Store the current row for reverting moves
-        previousColumn = column; // Store the current column for reverting moves
-        // Update the positions of the current and other dots
-        otherDot.GetComponent<Dot>().column += -1 * (int) direction.x; // Update other dot's column
-        otherDot.GetComponent<Dot>().row += -1 * (int) direction.y; // Update other dot's row
-        column += (int) direction.x; // Update current dot's column
-        row += (int) direction.y; // Update current dot's row
-        StartCoroutine(CheckMoveCo()); // Start checking the move's validity
+    // Get the dot in the direction of the swipe based on current column and row
+    otherDot = board.allDots[column + (int)direction.x, row + (int)direction.y]; 
+    
+    // Store the current row and column to revert moves if necessary
+    previousRow = row; 
+    previousColumn = column; 
+    
+        // Check if there is a dot in the target position
+        if (otherDot != null) {
+            // Update the column and row of the other dot to move it
+            otherDot.GetComponent<Dot>().column += -1 * (int)direction.x; // Adjust the other dot's column
+            otherDot.GetComponent<Dot>().row += -1 * (int)direction.y; // Adjust the other dot's row
+            
+            // Update the current dot's position
+            column += (int)direction.x; // Move current dot's column
+            row += (int)direction.y; // Move current dot's row
+            
+            // Start a coroutine to check the validity of the move
+            StartCoroutine(CheckMoveCo()); 
+        } else {
+            // If there is no dot to swap with, revert to the 'move' state
+            board.currentState = GameState.move; 
+        }
     }
 
     // Move the pieces based on the swipe direction
