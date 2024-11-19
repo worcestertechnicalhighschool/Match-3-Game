@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Match-3-Game.sln"
+    "dotnet.defaultSolution": "Matching-Mayhem-Personal.sln"
 }
