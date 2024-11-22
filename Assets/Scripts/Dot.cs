@@ -180,7 +180,7 @@ public class Dot : MonoBehaviour
         // Check if swipe distance exceeds the resistance threshold
         if (Mathf.Abs(finalTouchPosition.y - firstTouchPosition.y) > swipeResist || Mathf.Abs(finalTouchPosition.x - firstTouchPosition.x) > swipeResist)
         {
-            board.currentState = GameState.wait; // Change state to wait while processing the move
+            // board.currentState = GameState.wait; // Change state to wait while processing the move
             // Calculate the swipe angle in degrees
             swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y, finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             Debug.Log(swipeAngle); // Log the angle for debugging
