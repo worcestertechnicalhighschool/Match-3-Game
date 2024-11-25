@@ -169,10 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33cb5d842970ae841b2e35cb4cb98050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisImage: {fileID: 0}
-  thisSprite: {fileID: 0}
-  thisText: {fileID: 0}
-  thisString: 
+  thisImage: {fileID: 6173520929680291836}
+  thisSprite: {fileID: 21300000, guid: 391db6f0ecca54d6da86d51dc09ca314, type: 3}
+  thisText: {fileID: 1240057799484123744}
+  thisString: 0/0
 --- !u!1 &8698989101076472076
 GameObject:
   m_ObjectHideFlags: 0
