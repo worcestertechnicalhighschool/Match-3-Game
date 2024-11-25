@@ -26,6 +26,7 @@ public class Dot : MonoBehaviour
     public float swipeResist = 1f; // Resistance threshold for swipe detection
     private FindMatches findMatches; // Reference to the FindMatches script for checking matches
     private HintManager hintManager; // Reference to the HintManager script for generating hints on matches
+    private EndGameManager endGameManager; // Reference to the EndGameManager script for generating win or lose panels
 
     [Header("Power Up Variables")]
     public bool isColorBomb; // Flag indicating if this dot is a color bomb power-up
@@ -47,6 +48,7 @@ public class Dot : MonoBehaviour
         board = FindObjectOfType<Board>(); // Find and reference the Board in the scene
         findMatches = FindObjectOfType<FindMatches>(); // Reference to the FindMatches instance
         hintManager = FindObjectOfType<HintManager>(); // Reference to the HintManager instance
+        endGameManager = FindObjectOfType<EndGameManager>(); // Reference to the EndGameManager instance
     }
 
     // Handles right-click to create an adjacent bomb for debugging purposes
@@ -139,7 +141,16 @@ public class Dot : MonoBehaviour
             }
             else
             {
-                // If there is a match, trigger destruction of matched dots
+                // If there was a match, decrease the move counter if applicable
+                if (endGameManager != null)
+                {
+                    if (endGameManager.requirements.gameType == GameType.Moves)
+                    {
+                        endGameManager.DecreaseCounterValue(); // Decrease the move counter
+                    }
+                }
+
+                // Trigger the destruction of matched dots
                 board.DestroyMatches(); // Start the match destruction process
                 yield return new WaitForSeconds(.2f); // Wait for destruction to complete
             }
@@ -180,7 +191,7 @@ public class Dot : MonoBehaviour
         // Check if swipe distance exceeds the resistance threshold
         if (Mathf.Abs(finalTouchPosition.y - firstTouchPosition.y) > swipeResist || Mathf.Abs(finalTouchPosition.x - firstTouchPosition.x) > swipeResist)
         {
-            // board.currentState = GameState.wait; // Change state to wait while processing the move
+            board.currentState = GameState.wait; // Change state to wait while processing the move
             // Calculate the swipe angle in degrees
             swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y, finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             Debug.Log(swipeAngle); // Log the angle for debugging

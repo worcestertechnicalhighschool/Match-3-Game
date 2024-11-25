@@ -9,7 +9,10 @@ using UnityEngine.UIElements;
 public enum GameState
 {
     wait, // The game is waiting for a player action
-    move  // The game is ready for player movement
+    move,  // The game is ready for player movement
+    win, // The player has won the game
+    lose, // The player has lost the game
+    pause // The game is paused
 }
 
 // Enum to define different types of tiles
@@ -40,7 +43,7 @@ public class Board : MonoBehaviour
     public GameObject breakableTilePrefab; // Prefab for creating breakable tiles
     private bool[,] blankSpaces; // 2D array to track blank spaces on the board
     private BackgroundTile[,] breakableTiles; // 2D array to hold breakable tile references
-    public float refillDelay = 0.5f;
+    public float refillDelay = 0.5f; // Delay time between refilling the board after a match is destroyed
 
     [Header("Dot Settings")]
     public GameObject destroyEffect; // Effect to display when a dot is destroyed (e.g., animation, particle effect)
@@ -52,7 +55,8 @@ public class Board : MonoBehaviour
     private FindMatches findMatches; // Reference to the FindMatches script, used for detecting matching dots
     private int streakValue = 1; // Multiplier for consecutive matches (combo streak)
     private ScoreManager scoreManager; // Reference to the ScoreManager for updating the score
-    private SoundManager soundManager;
+    private SoundManager soundManager; // Reference to the SoundManager, used for playing sounds
+    private GoalManager goalManager; // Reference to the GoalManager, responsible for tracking and updating game goals
 
     [Header("Level Settings")]
     public int[] scoreGoals;
@@ -62,13 +66,16 @@ public class Board : MonoBehaviour
     void Start()
     {
         // Initialize references and arrays
-        soundManager = FindObjectOfType<SoundManager>();
-        scoreManager = FindObjectOfType<ScoreManager>(); // Find and cache the ScoreManager in the scene to update the score
+        goalManager = FindObjectOfType<GoalManager>(); // Find and store the GoalManager instance to manage level goals
+        soundManager = FindObjectOfType<SoundManager>(); // Find and store the SoundManager for playing sounds
+        scoreManager = FindObjectOfType<ScoreManager>(); // Find and store the ScoreManager to track the player's score
         breakableTiles = new BackgroundTile[width, height]; // Initialize a 2D array to hold the background tiles (e.g., breakable, unbreakable)
         findMatches = FindObjectOfType<FindMatches>(); // Retrieve the FindMatches component that will handle match logic
         blankSpaces = new bool[width, height]; // Initialize a 2D array to track which spaces are blank (no dots)
         allDots = new GameObject[width, height]; // Initialize a 2D array to hold references to the dots in each space on the board
-        SetUp(); // Call SetUp() to initialize the board, place tiles, and randomly populate it with dots
+        // Call SetUp() to initialize the board, place tiles, and randomly populate it with dots
+        SetUp(); 
+        currentState = GameState.pause; // Initially pause the game (waiting for player to start or resume)
     }
 
     // Generate blank spaces on the board based on the board layout
@@ -348,7 +355,12 @@ public class Board : MonoBehaviour
                     breakableTiles[column, row] = null; // Nullify the reference if the tile is destroyed
                 }
             }
-
+            // If a GoalManager is present, check if the current dot's tag matches any goals
+            if (goalManager != null)
+            {
+                goalManager.CompareGoal(allDots[column, row].tag.ToString()); // Compare the dot's tag to the goal
+                goalManager.UpdateGoals(); // Update the goal progress (e.g., increment goal counter)
+            }
             // Play a sound effect for the destruction (if the sound manager exists)
             if (soundManager != null)
             {

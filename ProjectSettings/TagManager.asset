@@ -14,6 +14,10 @@ TagManager:
   - Yellow Dot
   - Teal Dot
   - Rainbow Dot
+  - Breakable
+  - Adjacent
+  - Row
+  - Column
   layers:
   - Default
   - TransparentFX
