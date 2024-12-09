@@ -15,52 +15,76 @@ public enum GameState
     pause // The game is paused
 }
 
-// Enum to define different types of tiles
+// Enum to define different types of tiles on the board
 public enum TileKind
 {
-    Breakable, // A tile that can be destroyed
-    Blank,     // An empty space on the board
-    Normal     // A standard tile
+    Breakable, // A tile that can be destroyed by the player
+    Blank,     // An empty space on the board (no tile)
+    Normal     // A standard, unbreakable tile
 }
 
-// Class to represent the type of tile with its position and kind
+// Class to represent a tile with its position and type
 [System.Serializable]
 public class TileType
 {
     public int x; // X coordinate of the tile
     public int y; // Y coordinate of the tile
-    public TileKind tileKind; // Type of the tile
+    public TileKind tileKind; // Type of the tile (Breakable, Blank, or Normal)
 }
 
 public class Board : MonoBehaviour
 {
     [Header("Board Settings")]
-    public GameState currentState = GameState.move; // Current state of the game
-    public int width; // Width of the board in terms of columns
-    public int height; // Height of the board in terms of rows
-    public int offSet; // Offset for positioning tiles on the board
-    public GameObject tilePrefab; // Prefab for creating the background tiles
-    public GameObject breakableTilePrefab; // Prefab for creating breakable tiles
-    private bool[,] blankSpaces; // 2D array to track blank spaces on the board
-    private BackgroundTile[,] breakableTiles; // 2D array to hold breakable tile references
-    public float refillDelay = 0.5f; // Delay time between refilling the board after a match is destroyed
+    // The current state of the game, determining whether the player can interact or not
+    public GameState currentState = GameState.move; // The game is ready for player movement by default
+    public int width; // The number of columns on the board
+    public int height; // The number of rows on the board
+    public int offSet; // Offset used to position tiles correctly on the board
+    public GameObject tilePrefab; // Prefab used to create background tiles
+    public GameObject breakableTilePrefab; // Prefab used to create breakable tiles
+    private bool[,] blankSpaces; // 2D array used to track which spaces are blank (empty)
+    private BackgroundTile[,] breakableTiles; // 2D array used to hold references to breakable tiles
+    public float refillDelay = 0.5f; // Time delay between refilling the board after a match is destroyed
 
     [Header("Dot Settings")]
-    public GameObject destroyEffect; // Effect to display when a dot is destroyed (e.g., animation, particle effect)
+    public GameObject destroyEffect; // The effect (e.g., animation, particle) shown when a dot is destroyed
     public Dot currentDot; // Reference to the currently selected dot on the board
-    public int basePieceValue = 20; // Base score value for each dot (used for scoring)
-    public GameObject[] dots; // Array of available dot prefabs, each representing a different type of dot
-    public GameObject[,] allDots; // 2D array that holds all the dots currently on the board
-    public TileType[] boardLayout; // Array defining the layout of the board (e.g., background tiles, empty spaces, etc.)
-    private FindMatches findMatches; // Reference to the FindMatches script, used for detecting matching dots
+    public int basePieceValue = 20; // Base score value for each dot, used for scoring
+    public GameObject[] dots; // Array of dot prefabs, each representing a different type of dot
+    public GameObject[,] allDots; // 2D array that holds all the dots currently placed on the board
+    public TileType[] boardLayout; // Defines the layout of the board (including background tiles, blank spaces, etc.)
+    private FindMatches findMatches; // Reference to the FindMatches script used for detecting matching dots
     private int streakValue = 1; // Multiplier for consecutive matches (combo streak)
-    private ScoreManager scoreManager; // Reference to the ScoreManager for updating the score
-    private SoundManager soundManager; // Reference to the SoundManager, used for playing sounds
-    private GoalManager goalManager; // Reference to the GoalManager, responsible for tracking and updating game goals
+    private ScoreManager scoreManager; // Reference to the ScoreManager used to manage and update the player's score
+    private SoundManager soundManager; // Reference to the SoundManager, used to play sound effects
+    private GoalManager goalManager; // Reference to the GoalManager responsible for managing and updating the game goals
 
     [Header("Level Settings")]
-    public int[] scoreGoals;
+    public int[] scoreGoals; // The score goals required to pass the level
+    public World world; // Reference to the World object that contains all levels
+    public int level; // The current level the player is on
 
+    // This method runs when the Board script is first initialized
+    private void Awake()
+    {
+        // Initialize the board layout if a world and level are assigned
+        if (world != null)
+        {
+            // Check if the level exists within the world's levels array
+            if (level < world.levels.Length)
+            {
+                // If a level is defined, initialize the board settings based on the level
+                if (world.levels[level] != null)
+                {
+                    width = world.levels[level].width; // Set the board width for this level
+                    height = world.levels[level].height; // Set the board height for this level
+                    dots = world.levels[level].dots; // Set the dots available for this level
+                    scoreGoals = world.levels[level].scoreGoals; // Set the score goals for this level
+                    boardLayout = world.levels[level].boardLayout; // Set the board layout for this level
+                }
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
