@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 // The BlankGoal class holds the goal information like how many are needed, 
@@ -7,42 +8,79 @@ using UnityEngine;
 [System.Serializable]
 public class BlankGoal
 {
-    public int numberNeeded; // The number of items needed to complete the goal
-    public int numberCollected; // The number of items currently collected for the goal
-    public Sprite goalSprite; // The sprite that represents the goal visually
-    public string matchValue; // A string that holds a matching value or identifier (purpose can vary)
+    // The number of items needed to complete this goal (e.g., collect X items)
+    public int numberNeeded;
+
+    // The number of items currently collected toward completing this goal
+    public int numberCollected;
+
+    // The sprite that visually represents this goal (used in UI)
+    public Sprite goalSprite;
+
+    // A string identifier for matching the goal (could be item type or category)
+    public string matchValue;
 }
 
 // GoalManager is responsible for setting up and managing the goals during both the intro and in-game UI.
+// This includes initializing the goals and updating their status during gameplay.
 public class GoalManager : MonoBehaviour
 {
-    // Array of BlankGoal objects, representing each goal in the level
+    // Array of BlankGoal objects, representing each goal for the current level.
     public BlankGoal[] levelGoals;
 
-    // List of current goals in the game (for UI updating purposes)
+    // List of current goal UI elements, used to track and update displayed goals in the game.
     public List<GoalPanel> currentGoals = new List<GoalPanel>();
 
-    // The prefab used to instantiate goal UI elements
+    // Prefab for the goal UI elements, used to instantiate goal representations in the UI.
     public GameObject goalPrefab;
 
-    // The parent GameObject for the intro goals UI (before the game starts)
+    // The parent GameObject in the intro scene that holds the goal UI elements before gameplay starts.
     public GameObject goalIntroParent;
 
-    // The parent GameObject for the in-game goals UI (during the game)
+    // The parent GameObject in the game scene that holds the goal UI elements during gameplay.
     public GameObject goalGameParent;
 
-    // Reference to the EndGameManager to handle game-ending logic
+    // Reference to the EndGameManager, used for handling game-ending conditions and logic.
     private EndGameManager endGame;
 
+    // Reference to the Board, used to track level and world information for goal setup.
+    private Board board;
+
     // Start is called before the first frame update.
-    // Initializes the game by setting up the goals in both intro and game UI.
+    // Initializes the game by setting up the goals in both intro and in-game UI.
     void Start()
     {
-        // Find and reference the EndGameManager in the scene
+        // Find the Board object, which contains the game level and world information.
+        board = FindObjectOfType<Board>();
+
+        // Find the EndGameManager, which handles logic when the game ends.
         endGame = FindObjectOfType<EndGameManager>();
 
-        // Calls the SetupGoals method to set up the goals at the start of the game
+        // Retrieve the goals for the current level based on the Board's current world and level.
+        GetGoals();
+
+        // Calls SetupGoals method to prepare goal-related UI and logic for gameplay.
         SetupGoals();
+    }
+
+    // Retrieves the goals for the current level based on the Board's current world and level.
+    void GetGoals()
+    {
+        // Check if the Board and World are not null and if the current level exists within the world.
+        if (board != null)
+        {
+            if (board.world != null)
+            {
+                if (board.level < board.world.levels.Length)
+                {
+                    // Set the levelGoals array to the goals of the current level.
+                    if (board.world.levels[board.level] != null)
+                    {
+                        levelGoals = board.world.levels[board.level].levelGoals;
+                    }
+                }
+            }
+        }
     }
 
     // This method sets up the goal UI for both the intro screen and the game screen.

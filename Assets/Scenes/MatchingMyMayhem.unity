@@ -3074,6 +3074,8 @@ MonoBehaviour:
     y: 3
     tileKind: 0
   scoreGoals: 88130000
+  world: {fileID: 11400000, guid: 32f2b7e0e58a6594f9a604cf154bc5b6, type: 2}
+  level: 0
 --- !u!114 &1993194133
 MonoBehaviour:
   m_ObjectHideFlags: 0
