@@ -67,20 +67,36 @@ public class Board : MonoBehaviour
     // This method runs when the Board script is first initialized
     private void Awake()
     {
+        // Check if the PlayerPrefs has a stored key for "Current Level"
+        if (PlayerPrefs.HasKey("Current Level"))
+        {
+            // If the key exists, retrieve the level number from PlayerPrefs and assign it to the 'level' variable
+            level = PlayerPrefs.GetInt("Current Level");
+        }
+
         // Initialize the board layout if a world and level are assigned
         if (world != null)
         {
-            // Check if the level exists within the world's levels array
+            // Check if the current level is within the bounds of the world's levels array
             if (level < world.levels.Length)
             {
-                // If a level is defined, initialize the board settings based on the level
+                // If a valid level is defined, initialize the board settings based on the level data
                 if (world.levels[level] != null)
                 {
-                    width = world.levels[level].width; // Set the board width for this level
-                    height = world.levels[level].height; // Set the board height for this level
-                    dots = world.levels[level].dots; // Set the dots available for this level
-                    scoreGoals = world.levels[level].scoreGoals; // Set the score goals for this level
-                    boardLayout = world.levels[level].boardLayout; // Set the board layout for this level
+                    // Set the width of the board based on the current level
+                    width = world.levels[level].width;
+
+                    // Set the height of the board based on the current level
+                    height = world.levels[level].height;
+
+                    // Set the available dots for the current level
+                    dots = world.levels[level].dots;
+
+                    // Set the score goals for the current level
+                    scoreGoals = world.levels[level].scoreGoals;
+
+                    // Set the board layout for the current level
+                    boardLayout = world.levels[level].boardLayout;
                 }
             }
         }

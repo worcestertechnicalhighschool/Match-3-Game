@@ -66,22 +66,33 @@ public class GoalManager : MonoBehaviour
     // Retrieves the goals for the current level based on the Board's current world and level.
     void GetGoals()
     {
-        // Check if the Board and World are not null and if the current level exists within the world.
+        // Check if the Board object is not null
         if (board != null)
         {
+            // Check if the World object inside the Board is not null
             if (board.world != null)
             {
+                // Check if the current level is valid (within the bounds of the world's levels array)
                 if (board.level < board.world.levels.Length)
                 {
-                    // Set the levelGoals array to the goals of the current level.
+                    // If the current level is valid, set the levelGoals array to the goals of the current level
                     if (board.world.levels[board.level] != null)
                     {
+                        // Set levelGoals to the goals defined for the current level
                         levelGoals = board.world.levels[board.level].levelGoals;
+
+                        // Loop through each goal in the levelGoals array
+                        for (int i = 0; i < levelGoals.Length; i++)
+                        {
+                            // Initialize the numberCollected for each goal to 0 (reset the collection count)
+                            levelGoals[i].numberCollected = 0;
+                        }
                     }
                 }
             }
         }
     }
+
 
     // This method sets up the goal UI for both the intro screen and the game screen.
     void SetupGoals()

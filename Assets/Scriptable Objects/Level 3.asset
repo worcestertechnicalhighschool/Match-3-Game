@@ -24,3 +24,19 @@ MonoBehaviour:
   - {fileID: 3717717369509594408, guid: 716e6f6ef5324496fa07e0a68708cc5c, type: 3}
   - {fileID: 5765407513363869183, guid: bfd7f8ff112434680b226987554c09f6, type: 3}
   scoreGoals: b80b00008813000010270000
+  endGameRequirements:
+    gameType: 0
+    counterValue: 30
+  levelGoals:
+  - numberNeeded: 30
+    numberCollected: 0
+    goalSprite: {fileID: 21300000, guid: 564dcceab91a841a1bc4ab4293e866e5, type: 3}
+    matchValue: 
+  - numberNeeded: 50
+    numberCollected: 0
+    goalSprite: {fileID: 21300000, guid: 45dea9dc96f634505b0bd9e258ac7e73, type: 3}
+    matchValue: 
+  - numberNeeded: 2
+    numberCollected: 0
+    goalSprite: {fileID: 21300000, guid: c7c0d8133c34f448d9381e8d1e47d1a0, type: 3}
+    matchValue: Rainbow Dot
