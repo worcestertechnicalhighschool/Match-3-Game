@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/Scenes/Splash.unity
+    guid: 9629e1f7d57e3d546aadf21eddcb07da
+  - enabled: 1
+    path: Assets/Scenes/MatchingMyMayhem.unity
+    guid: 985fe484e17f94e14950529f669c1fe0
   m_configObjects: {}

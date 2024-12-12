@@ -23,3 +23,15 @@ MonoBehaviour:
   - {fileID: 6658201395674459632, guid: 251bc0caa6f7549499bf2927a6457c5f, type: 3}
   - {fileID: 5765407513363869183, guid: bfd7f8ff112434680b226987554c09f6, type: 3}
   scoreGoals: e8030000b80b000088130000
+  endGameRequirements:
+    gameType: 1
+    counterValue: 75
+  levelGoals:
+  - numberNeeded: 50
+    numberCollected: 0
+    goalSprite: {fileID: 21300000, guid: b3a0a0d0052e54d00846d0c87817fdda, type: 3}
+    matchValue: Blue Dot
+  - numberNeeded: 50
+    numberCollected: 0
+    goalSprite: {fileID: 21300000, guid: caffdeacdc77d4b448a7d924325c94d6, type: 3}
+    matchValue: Green Dot
