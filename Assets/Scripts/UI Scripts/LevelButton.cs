@@ -12,6 +12,7 @@ public class LevelButton : MonoBehaviour
     public Sprite lockedSprite;        // Sprite for the locked (non-clickable) button
     private Image buttonImage;         // Reference to the button's Image component (for changing sprite)
     private Button myButton;           // Reference to the Button component (for enabling/disabling)
+    private int starsActive;
 
     // Header to define UI elements
     [Header("UI Stuff")]
@@ -20,14 +21,18 @@ public class LevelButton : MonoBehaviour
     public int level;                  // The level number represented by this button
     public GameObject confirmPanel;    // Reference to a confirmation panel (shown when a level is selected)
 
+    private GameData gameData;
+
     // Start is called before the first frame update
     void Start()
     {
-        // Get references to the Image and Button components on this GameObject
+        // Get references to components on this GameObject
+        gameData = FindObjectOfType<GameData>();
         buttonImage = GetComponent<Image>();
         myButton = GetComponent<Button>();
-
+        
         // Call methods to initialize the button state and UI elements
+        LoadData();
         ActivateStars();
         ShowLevel();
         DecideSprite();
@@ -37,9 +42,9 @@ public class LevelButton : MonoBehaviour
     void ActivateStars()
     {
         // Loop through all the stars and disable them
-        for (int i = 0; i < stars.Length; i++)
+        for (int i = 0; i < starsActive; i++)
         {
-            stars[i].enabled = false;
+            stars[i].enabled = true;
         }
     }
 
@@ -59,6 +64,23 @@ public class LevelButton : MonoBehaviour
             buttonImage.sprite = lockedSprite; // Set the locked button sprite
             myButton.enabled = false;          // Disable the button interaction
             levelText.enabled = false;         // Hide the level text
+        }
+    }
+
+    void LoadData()
+    {
+        if (gameData != null)
+        {
+            Debug.Log("hello");
+            Debug.Log(level);
+            if (gameData.saveData.isActive[level - 1])
+            {
+                isActive = true;
+            } else
+            {
+                isActive = false;
+            }
+            starsActive = gameData.saveData.stars[level - 1];
         }
     }
 

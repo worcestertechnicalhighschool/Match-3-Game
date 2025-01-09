@@ -12,23 +12,37 @@ public class ConfirmPanel : MonoBehaviour
     // Array of star images for showing level completion status
     public Image[] stars;
 
+    private int starsActive;
+
     // The level number associated with this confirmation panel
     public int level;
+
+    private GameData gameData;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameData = FindObjectOfType<GameData>();
+        LoadData();
         // Call the method to initially hide all the stars in the panel
         ActivateStars();
+    }
+
+    void LoadData()
+    {
+        if (gameData != null)
+        {
+            starsActive = gameData.saveData.stars[level - 1];
+        }
     }
 
     // This method deactivates all the star images (making them invisible)
     void ActivateStars()
     {
         // Loop through all the stars and disable them (set them to not visible)
-        for (int i = 0; i < stars.Length; i++)
+        for (int i = 0; i < starsActive; i++)
         {
-            stars[i].enabled = false;
+            stars[i].enabled = true;
         }
     }
 
