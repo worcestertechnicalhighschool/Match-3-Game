@@ -18,6 +18,13 @@ TagManager:
   - Adjacent
   - Row
   - Column
+  - Blue
+  - Yellow
+  - Green
+  - Red
+  - Orange
+  - Purple
+  - Pink
   layers:
   - Default
   - TransparentFX

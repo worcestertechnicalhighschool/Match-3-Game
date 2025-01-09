@@ -56,6 +56,11 @@ public class GameData : MonoBehaviour
         Debug.Log("Saved! :D");
     }
 
+    private void OnApplicationQuit()
+    {
+        Save();
+    }
+
     // OnDisable is automatically called when the object is about to be destroyed.
     private void OnDisable()
     {

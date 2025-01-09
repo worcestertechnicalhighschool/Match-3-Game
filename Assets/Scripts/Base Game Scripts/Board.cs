@@ -268,9 +268,47 @@ public class Board : MonoBehaviour
     }
 
     // Determine if the current matches are in a single row or column
-    private bool ColumnOrRow()
+    private int ColumnOrRow()
     {
-        int numberHorizontal = 0; // Counter for horizontal matches
+        List<GameObject> matchCopy = findMatches.currentMatches as List<GameObject>;
+        for (int i = 0; i < matchCopy.Count; i++)
+        {
+            Dot thisDot = matchCopy[i].GetComponent<Dot>();
+            int column = thisDot.column;
+            int row = thisDot.row;
+            int columnMatch = 0;
+            int rowMatch = 0;
+            for (int j = 0; j < matchCopy.Count; j++)
+            {
+                Dot nextDot = matchCopy[j].GetComponent<Dot>();
+                if (nextDot == thisDot)
+                {
+                    continue;
+                }
+                if (nextDot.column == thisDot.column && nextDot.CompareTag(thisDot.tag))
+                {
+                    columnMatch++;
+                }
+                if (nextDot.row == thisDot.row && nextDot.CompareTag(thisDot.tag))
+                {
+                    rowMatch++;
+                }
+            }
+            if (columnMatch == 4 || rowMatch == 4)
+            {
+                return 1;
+            }
+            if (columnMatch == 2 && rowMatch == 2)
+            {
+                return 2;
+            }
+            if (columnMatch == 3 || rowMatch == 3)
+            {
+                return 3;
+            }
+        }
+        return 0;
+        /* int numberHorizontal = 0; // Counter for horizontal matches
         int numberVertical = 0; // Counter for vertical matches
         Dot firstPiece = findMatches.currentMatches[0].GetComponent<Dot>(); // Get the first matched dot
 
@@ -293,13 +331,83 @@ public class Board : MonoBehaviour
             }
         }
         // Return true if there are five pieces in a row or column
-        return numberVertical == 5 || numberHorizontal == 5;
+        return numberVertical == 5 || numberHorizontal == 5; */
     }
 
     // Check if any bombs need to be created based on current matches
     private void CheckToMakeBombs()
     {
-        // Handle bomb creation for specific match counts
+        if (findMatches.currentMatches.Count > 3)
+        {
+            int typeOfMatch = ColumnOrRow();
+            if (typeOfMatch == 1)
+            {
+                // If matches are in a line
+                if (currentDot != null)
+                {
+                    // Create a color bomb if the current dot is matched and not already a color bomb
+                    if (currentDot.isMatched)
+                    {
+                        if (!currentDot.isColorBomb)
+                        {
+                            currentDot.isMatched = false; // Reset matched status
+                            currentDot.MakeColorBomb(); // Create a color bomb
+                        }
+                    }
+                    else
+                    { // Check the other dot in case it is matched
+                        if (currentDot.otherDot != null)
+                        {
+                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
+                            if (otherDot.isMatched)
+                            {
+                                if (!otherDot.isColorBomb)
+                                {
+                                    otherDot.isMatched = false; // Reset matched status
+                                    otherDot.MakeColorBomb(); // Create a color bomb
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (typeOfMatch == 2)
+            {
+                // If matches are not in a line, check for adjacent bomb creation
+                if (currentDot != null)
+                {
+                    // Create an adjacent bomb if the current dot is matched and not already an adjacent bomb
+                    if (currentDot.isMatched)
+                    {
+                        if (!currentDot.isAdjacentBomb)
+                        {
+                            currentDot.isMatched = false; // Reset matched status
+                            currentDot.MakeAdjacentBomb(); // Create an adjacent bomb
+                        }
+                    }
+                    else
+                    { // Check the other dot for adjacent bomb creation
+                        if (currentDot.otherDot != null)
+                        {
+                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
+                            if (otherDot.isMatched)
+                            {
+                                if (!otherDot.isAdjacentBomb)
+                                {
+                                    otherDot.isMatched = false; // Reset matched status
+                                    otherDot.MakeAdjacentBomb(); // Create an adjacent bomb
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (typeOfMatch == 3)
+            {
+                findMatches.CheckBombs(); // Check for any bomb effects based on matches
+            }
+        }
+        /* Handle bomb creation for specific match counts
         if (findMatches.currentMatches.Count == 4 || findMatches.currentMatches.Count == 7)
         {
             findMatches.CheckBombs(); // Check for any bomb effects based on matches
@@ -368,8 +476,8 @@ public class Board : MonoBehaviour
                     }
                 }
             }
-        }
-    }
+        } */
+    } 
 
     // Destroy matched dots at the specified column and row
     private void DestroyMatchesAt(int column, int row)
@@ -547,11 +655,11 @@ public class Board : MonoBehaviour
     // Coroutine to refill the board with new dots after destroying any matches
     private IEnumerator FillBoardCo()
     {
-        // Refill the board with new dots after clearing the matched dots
-        RefillBoard();
-
         // Wait for a short period (0.2 seconds) to allow the board to settle before checking for new matches
         yield return new WaitForSeconds(refillDelay);
+
+        // Refill the board with new dots after clearing the matched dots
+        RefillBoard();
 
         // Continuously check for new matches on the board until no more are found
         while (MatchesOnBoard())
