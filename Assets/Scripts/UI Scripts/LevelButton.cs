@@ -71,8 +71,6 @@ public class LevelButton : MonoBehaviour
     {
         if (gameData != null)
         {
-            Debug.Log("hello");
-            Debug.Log(level);
             if (gameData.saveData.isActive[level - 1])
             {
                 isActive = true;
@@ -87,7 +85,13 @@ public class LevelButton : MonoBehaviour
     // Displays the level number on the button's text field
     void ShowLevel()
     {
-        levelText.text = "" + level;  // Set the level number as text
+        if (level == 1)
+        {
+            levelText.text = "1 Minute Blitz";
+        } else
+        {
+            levelText.text = "" + (level - 1);  // Set the level number as text
+        }
     }
 
     // This method is called when a player selects a level, displaying a confirmation panel
