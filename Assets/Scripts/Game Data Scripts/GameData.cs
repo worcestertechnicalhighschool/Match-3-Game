@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using UnityEditor.Experimental.RestService;
 
 // The SaveData class is marked as Serializable so it can be serialized for saving/loading purposes.
 [Serializable]
@@ -48,7 +47,7 @@ public class GameData : MonoBehaviour
         FileStream file = File.Open(Application.persistentDataPath + "/player.dat", FileMode.Create);
         // Create a new SaveData object and assign the current saveData to it.
         SaveData data = new SaveData();
-
+        data = saveData;
         // Serialize the saveData into the file.
         formatter.Serialize(file, data);
         // Close the file stream.
