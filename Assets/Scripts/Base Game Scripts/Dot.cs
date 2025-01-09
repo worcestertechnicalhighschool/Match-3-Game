@@ -302,40 +302,52 @@ public class Dot : MonoBehaviour
     // Method to create a row bomb power-up
     public void MakeRowBomb()
     {
-        isRowBomb = true; // Set row bomb flag
-        GameObject arrow = Instantiate(rowArrow, transform.position, UnityEngine.Quaternion.identity);
-        arrow.transform.parent = this.transform; // Set arrow as a child of this dot
+        if (!isColumnBomb && !isColorBomb && !isAdjacentBomb)
+        {
+            isRowBomb = true; // Set row bomb flag
+            GameObject arrow = Instantiate(rowArrow, transform.position, UnityEngine.Quaternion.identity);
+            arrow.transform.parent = this.transform; // Set arrow as a child of this dot
+        }
     }
 
     // Method to create a column bomb power-up
     public void MakeColumnBomb()
     {
-        isColumnBomb = true; // Set column bomb flag
-        GameObject arrow = Instantiate(columnArrow, transform.position, UnityEngine.Quaternion.identity);
-        arrow.transform.parent = this.transform; // Set arrow as a child of this dot
+        if (!isRowBomb && !isColorBomb && !isAdjacentBomb)
+        {
+            isColumnBomb = true; // Set column bomb flag
+            GameObject arrow = Instantiate(columnArrow, transform.position, UnityEngine.Quaternion.identity);
+            arrow.transform.parent = this.transform; // Set arrow as a child of this dot
+        }
     }
 
     // Method to create a color bomb power-up (a special item that can clear all dots of a specific color)
     public void MakeColorBomb()
     {
-        // Set the flag indicating this dot is now a color bomb
-        isColorBomb = true;
+        if (!isColumnBomb && !isRowBomb && !isAdjacentBomb)
+        {
+            // Set the flag indicating this dot is now a color bomb
+            isColorBomb = true;
 
-        // Instantiate the color bomb prefab at the current position of the dot
-        GameObject color = Instantiate(colorBomb, transform.position, UnityEngine.Quaternion.identity);
+            // Instantiate the color bomb prefab at the current position of the dot
+            GameObject color = Instantiate(colorBomb, transform.position, UnityEngine.Quaternion.identity);
 
-        // Set the color bomb as a child of this dot for organization in the hierarchy
-        color.transform.parent = this.transform;
+            // Set the color bomb as a child of this dot for organization in the hierarchy
+            color.transform.parent = this.transform;
 
-        // Tag the current dot as "Color" to distinguish it from regular dots
-        this.gameObject.tag = "Color";
+            // Tag the current dot as "Color" to distinguish it from regular dots
+            this.gameObject.tag = "Color";
+        }
     }
 
     // Method to create an adjacent bomb power-up
     public void MakeAdjacentBomb()
     {
-        isAdjacentBomb = true; // Set adjacent bomb flag to true
-        GameObject marker = Instantiate(adjacentMarker, transform.position, UnityEngine.Quaternion.identity);
-        marker.transform.parent = this.transform; // Set the adjacent bomb marker as a child of this dot
+        if (!isColumnBomb && !isColorBomb && !isRowBomb)
+        {
+            isAdjacentBomb = true; // Set adjacent bomb flag to true
+            GameObject marker = Instantiate(adjacentMarker, transform.position, UnityEngine.Quaternion.identity);
+            marker.transform.parent = this.transform; // Set the adjacent bomb marker as a child of this dot
+        }
     }
 }
