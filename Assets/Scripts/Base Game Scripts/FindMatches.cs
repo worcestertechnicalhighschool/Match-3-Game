@@ -107,7 +107,8 @@ public class FindMatches : MonoBehaviour
     // Coroutine to find all matches on the board
     private IEnumerator FindAllMatchesCo()
     {
-        yield return new WaitForSeconds(.1f); // Wait briefly before starting the match check
+        yield return null;
+        // yield return new WaitForSeconds(.1f); // Wait briefly before starting the match check
         for (int i = 0; i < board.width; i++)
         { // Loop through each column
             for (int j = 0; j < board.height; j++)
@@ -159,6 +160,7 @@ public class FindMatches : MonoBehaviour
                 }
             }
         }
+
     }
 
     // Mark all dots of the specified color as matched
@@ -258,11 +260,11 @@ public class FindMatches : MonoBehaviour
     }
 
     // Check if the current or other dot is a bomb and create a bomb if matched
-    public void CheckBombs()
+    public void CheckBombs(MatchType matchType)
     {
         if (board.currentDot != null)
         {
-            if (board.currentDot.isMatched)
+            if (board.currentDot.isMatched && board.currentDot.tag == matchType.color)
             {
                 board.currentDot.isMatched = false; // Reset the matched status for the current dot
                 // Determine the type of bomb based on swipe direction
@@ -279,7 +281,7 @@ public class FindMatches : MonoBehaviour
             else if (board.currentDot.otherDot != null)
             {
                 Dot otherDot = board.currentDot.otherDot.GetComponent<Dot>(); // Get the Dot component of the other dot
-                if (otherDot.isMatched)
+                if (otherDot.isMatched && otherDot.tag == matchType.color)
                 {
                     otherDot.isMatched = false; // Reset the matched status for the other dot
                     // Determine the type of bomb based on swipe direction
