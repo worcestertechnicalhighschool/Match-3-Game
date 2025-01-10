@@ -10,6 +10,7 @@ public class ScoreManager : MonoBehaviour
     public int score; // The player's current score
     public Image scoreBar; // Reference to the UI Image component representing the score progress bar
     private GameData gameData; // Reference to the GameData component to save high scores
+    private int numberStars; // The number of stars the player has earned based on score goals
 
     // Start is called before the first frame update
     void Start()
@@ -36,20 +37,40 @@ public class ScoreManager : MonoBehaviour
         // Increase the current score by the specified amount
         score += amountToIncrease;
 
+        // Loop through score goals to check if a new star should be awarded
+        for (int i = 0; i < board.scoreGoals.Length; i++)
+        {
+            // If the current score exceeds a score goal and the player hasn't already earned that star
+            if (score > board.scoreGoals[i] && numberStars < i + 1)
+            {
+                numberStars++; // Increment the number of stars the player has earned
+            }
+        }
+
         // Check if the gameData is available to save the high score
         if (gameData != null)
         {
             // Retrieve the current high score for the level from the saved game data
             int highScore = gameData.saveData.highScores[board.level];
 
-            // If the new score exceeds the current high score, update the high score in saved data
-            gameData.saveData.highScores[board.level] = score;
-
             // If the current score is greater than the high score, save the new high score
             if (score > highScore)
             {
+                // Update the high score in the saved data
                 gameData.saveData.highScores[board.level] = score;
             }
+
+            // Retrieve the current stars the player has for this level
+            int currentStars = gameData.saveData.stars[board.level];
+
+            // If the player has earned more stars than previously saved, update the stars
+            if (numberStars > currentStars)
+            {
+                gameData.saveData.stars[board.level] = numberStars;
+            }
+
+            // Save the updated game data to persistent storage
+            gameData.Save();
         }
 
         // Check if the board and scoreBar references are valid to avoid null reference errors
@@ -62,5 +83,19 @@ public class ScoreManager : MonoBehaviour
             // The fill amount is based on the current score relative to the final score goal
             scoreBar.fillAmount = (float)score / (float)board.scoreGoals[length - 1];
         }
+    }
+
+    // Method called when the application is paused
+    // Used to save stars and other progress when the game is paused or the application loses focus
+    private void OnApplicationPause()
+    {
+        // If gameData is available, save the number of stars the player has earned for this level
+        if (gameData != null)
+        {
+            gameData.saveData.stars[board.level] = numberStars;
+        }
+
+        // Save all game data to persistent storage
+        gameData.Save();
     }
 }

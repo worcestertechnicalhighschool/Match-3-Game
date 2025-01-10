@@ -22,16 +22,16 @@ MonoBehaviour:
   - {fileID: 8682116403278553238, guid: 383dabb79a8f744469e264df7505782d, type: 3}
   - {fileID: 2318365741609268332, guid: df14d84f43225ba46a235b0963cb92ab, type: 3}
   - {fileID: 6331728483860370602, guid: f254418782da37b4998289fc96f30c5f, type: 3}
-  scoreGoals: e8030000b80b000088130000
+  scoreGoals: f4010000e8030000d0070000
   endGameRequirements:
     gameType: 1
     counterValue: 75
   levelGoals:
-  - numberNeeded: 50
-    numberCollected: 3
+  - numberNeeded: 10
+    numberCollected: 12
     goalSprite: {fileID: 21300000, guid: 1be08b59a06aea041a4792a12d1b71a1, type: 3}
     matchValue: Blue
-  - numberNeeded: 50
-    numberCollected: 8
+  - numberNeeded: 10
+    numberCollected: 12
     goalSprite: {fileID: 21300000, guid: bf5ba085dab1e244e85a6a61bfeb9253, type: 3}
     matchValue: Green

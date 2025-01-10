@@ -1364,7 +1364,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.43600002, y: 0.04112066}
   m_AnchorMax: {x: 0.565, y: 0.13700001}
-  m_AnchoredPosition: {x: -0.5, y: 2.423767}
+  m_AnchoredPosition: {x: -0.5, y: 2.4236298}
   m_SizeDelta: {x: 15, y: 14.847702}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &803669904
@@ -1807,7 +1807,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.039170127, y: 0.07280112}
   m_AnchorMax: {x: 0.95917016, y: 0.9356024}
-  m_AnchoredPosition: {x: -1.2924194, y: -1.4717102}
+  m_AnchoredPosition: {x: -1.2924194, y: -1.4717407}
   m_SizeDelta: {x: 15.002403, y: 18.530602}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1094246295
@@ -2103,7 +2103,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.039170127, y: 0.07280112}
   m_AnchorMax: {x: 0.95917016, y: 0.9356024}
-  m_AnchoredPosition: {x: -1.2924194, y: -1.4717102}
+  m_AnchoredPosition: {x: -1.2924194, y: -1.4717407}
   m_SizeDelta: {x: 15.002403, y: 18.530602}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1291711793
@@ -2261,7 +2261,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.43600002, y: 0.04112066}
   m_AnchorMax: {x: 0.565, y: 0.13700001}
-  m_AnchoredPosition: {x: -0.5, y: 2.423767}
+  m_AnchoredPosition: {x: -0.5, y: 2.4236298}
   m_SizeDelta: {x: 15, y: 14.847702}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1423116269
@@ -2444,7 +2444,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.039170127, y: 0.07280112}
   m_AnchorMax: {x: 0.95917016, y: 0.9356024}
-  m_AnchoredPosition: {x: -1.2924194, y: -1.4717102}
+  m_AnchoredPosition: {x: -1.2924194, y: -1.4717407}
   m_SizeDelta: {x: 15.002403, y: 18.530602}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1485760935
@@ -2887,7 +2887,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.43600002, y: 0.04112066}
   m_AnchorMax: {x: 0.565, y: 0.13700001}
-  m_AnchoredPosition: {x: -0.5, y: 2.423767}
+  m_AnchoredPosition: {x: -0.5, y: 2.4236298}
   m_SizeDelta: {x: 15, y: 14.847702}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1842550823
@@ -3100,7 +3100,7 @@ GameObject:
   - component: {fileID: 1993194133}
   m_Layer: 0
   m_Name: Board
-  m_TagString: Untagged
+  m_TagString: Board
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3137,16 +3137,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595d0801652f74e6a97720fc98c7fa25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreGoals: 88130000
+  world: {fileID: 11400000, guid: 32f2b7e0e58a6594f9a604cf154bc5b6, type: 2}
   currentState: 1
   width: 8
   height: 8
   offSet: 20
   tilePrefab: {fileID: 9045783198580752738, guid: 05917efad5c9b48ee83e74eb15ca64a1, type: 3}
   breakableTilePrefab: {fileID: 7759147092073502607, guid: 758ed36c7d3ae4fa0ba291623d727ab2, type: 3}
-  refillDelay: 0.5
+  lockTilePrefab: {fileID: 3908677054262846356, guid: 99bc392d9a332b445b3e9595fc532d1f, type: 3}
+  dirtTilePrefab: {fileID: 4121524552503710782, guid: df25e2c6dfc48744394c8515416d5cec, type: 3}
+  chocolateTilePrefab: {fileID: 1759408084224233906, guid: 4ff9a2c827a36c34b9c4e43b2dbad3e1, type: 3}
   destroyEffect: {fileID: 2189006245599622555, guid: 4c39c6e5f08324b26bd45c195cd7e3f1, type: 3}
-  currentDot: {fileID: 0}
-  basePieceValue: 20
   dots:
   - {fileID: 4583171193960113888, guid: bed5af3301fcaa44ea82cd74fac6f99f, type: 3}
   - {fileID: 5961274683975564150, guid: fca19b85f4f7487459361d9de8600e61, type: 3}
@@ -3155,12 +3157,16 @@ MonoBehaviour:
   - {fileID: 8891640953318616448, guid: f3344a405f8f6064b8be984af2f329b7, type: 3}
   - {fileID: 2318365741609268332, guid: df14d84f43225ba46a235b0963cb92ab, type: 3}
   - {fileID: 6331728483860370602, guid: f254418782da37b4998289fc96f30c5f, type: 3}
+  currentDot: {fileID: 0}
+  basePieceValue: 20
+  matchType:
+    type: 0
+    color: 
   boardLayout:
   - x: 4
     y: 3
     tileKind: 0
-  scoreGoals: 88130000
-  world: {fileID: 11400000, guid: 32f2b7e0e58a6594f9a604cf154bc5b6, type: 2}
+  refillDelay: 0.5
   level: 1
 --- !u!114 &1993194133
 MonoBehaviour:

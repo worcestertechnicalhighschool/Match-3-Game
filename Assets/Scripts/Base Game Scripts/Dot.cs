@@ -210,19 +210,27 @@ public class Dot : MonoBehaviour
         previousRow = row;
         previousColumn = column;
 
-        // Check if there is a dot in the target position
-        if (otherDot != null)
+        if (board.lockTiles[column, row] == null && board.lockTiles[column + (int) direction.x, row + (int)direction.y] == null)
         {
-            // Update the column and row of the other dot to move it
-            otherDot.GetComponent<Dot>().column += -1 * (int)direction.x; // Adjust the other dot's column
-            otherDot.GetComponent<Dot>().row += -1 * (int)direction.y; // Adjust the other dot's row
+            // Check if there is a dot in the target position
+            if (otherDot != null)
+            {
+                // Update the column and row of the other dot to move it
+                otherDot.GetComponent<Dot>().column += -1 * (int)direction.x; // Adjust the other dot's column
+                otherDot.GetComponent<Dot>().row += -1 * (int)direction.y; // Adjust the other dot's row
 
-            // Update the current dot's position
-            column += (int)direction.x; // Move current dot's column
-            row += (int)direction.y; // Move current dot's row
+                // Update the current dot's position
+                column += (int)direction.x; // Move current dot's column
+                row += (int)direction.y; // Move current dot's row
 
-            // Start a coroutine to check the validity of the move
-            StartCoroutine(CheckMoveCo());
+                // Start a coroutine to check the validity of the move
+                StartCoroutine(CheckMoveCo());
+            }
+            else
+            {
+                // If there is no dot to swap with, revert to the 'move' state
+                board.currentState = GameState.move;
+            }
         }
         else
         {
