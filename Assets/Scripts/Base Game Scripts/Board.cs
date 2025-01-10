@@ -20,7 +20,10 @@ public enum TileKind
 {
     Breakable, // A tile that can be destroyed by the player
     Blank,     // An empty space on the board (no tile)
-    Normal     // A standard, unbreakable tile
+    Normal,     // A standard, unbreakable tile
+    Lock,
+    Dirt,
+    Chocolate
 }
 
 [System.Serializable]
@@ -54,16 +57,16 @@ public class Board : MonoBehaviour
     [Header("Prefab Settings")]
     public GameObject tilePrefab; // Prefab used to create background tiles
     public GameObject breakableTilePrefab; // Prefab used to create breakable tiles
-    private bool[,] blankSpaces; // 2D array used to track which spaces are blank (empty)
-    private BackgroundTile[,] breakableTiles; // 2D array used to hold references to breakable tiles
-    public float refillDelay = 0.5f; // Time delay between refilling the board after a match is destroyed
-
-    [Header("Dot Settings")]
+    public GameObject lockTilePrefab;
+    public GameObject dirtTilePrefab;
+    public GameObject chocolateTilePrefab;
     public GameObject destroyEffect; // The effect (e.g., animation, particle) shown when a dot is destroyed
-    public Dot currentDot; // Reference to the currently selected dot on the board
-    public int basePieceValue = 20; // Base score value for each dot, used for scoring
     public GameObject[] dots; // Array of dot prefabs, each representing a different type of dot
     public GameObject[,] allDots; // 2D array that holds all the dots currently placed on the board
+
+    [Header("Dot Settings")]
+    public Dot currentDot; // Reference to the currently selected dot on the board
+    public int basePieceValue = 20; // Base score value for each dot, used for scoring
 
     [Header("Match Settings")]
     public MatchType matchType;
@@ -73,6 +76,12 @@ public class Board : MonoBehaviour
     private ScoreManager scoreManager; // Reference to the ScoreManager used to manage and update the player's score
     private SoundManager soundManager; // Reference to the SoundManager, used to play sound effects
     private GoalManager goalManager; // Reference to the GoalManager responsible for managing and updating the game goals
+    private bool[,] blankSpaces; // 2D array used to track which spaces are blank (empty)
+    private BackgroundTile[,] breakableTiles; // 2D array used to hold references to breakable tiles
+    public BackgroundTile[,] lockTiles;
+    private BackgroundTile[,] dirtTiles;
+    private BackgroundTile[,] chocolateTiles;
+    public float refillDelay = 0.2f; // Time delay between refilling the board after a match is destroyed
 
     [Header("Level Settings")]
     public int level; // The current level the player is on
@@ -123,6 +132,9 @@ public class Board : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>(); // Find and store the SoundManager for playing sounds
         scoreManager = FindObjectOfType<ScoreManager>(); // Find and store the ScoreManager to track the player's score
         breakableTiles = new BackgroundTile[width, height]; // Initialize a 2D array to hold the background tiles (e.g., breakable, unbreakable)
+        lockTiles = new BackgroundTile[width, height];
+        dirtTiles = new BackgroundTile[width, height];
+        chocolateTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>(); // Retrieve the FindMatches component that will handle match logic
         blankSpaces = new bool[width, height]; // Initialize a 2D array to track which spaces are blank (no dots)
         allDots = new GameObject[width, height]; // Initialize a 2D array to hold references to the dots in each space on the board
@@ -160,6 +172,54 @@ public class Board : MonoBehaviour
         }
     }
 
+    private void GenerateLockTiles()
+    {
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            if (boardLayout[i].tileKind == TileKind.Lock)
+            {
+                // Set the position for the lock tile
+                UnityEngine.Vector2 tempPosition = new UnityEngine.Vector2(boardLayout[i].x, boardLayout[i].y);
+                // Instantiate the breakable tile prefab at the designated position
+                GameObject tile = Instantiate(lockTilePrefab, tempPosition, UnityEngine.Quaternion.identity);
+                // Store a reference to the BackgroundTile component
+                lockTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
+            }
+        }
+    }
+
+    private void GenerateDirtTiles()
+    {
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            if (boardLayout[i].tileKind == TileKind.Dirt)
+            {
+                // Set the position for the lock tile
+                UnityEngine.Vector2 tempPosition = new UnityEngine.Vector2(boardLayout[i].x, boardLayout[i].y);
+                // Instantiate the breakable tile prefab at the designated position
+                GameObject tile = Instantiate(dirtTilePrefab, tempPosition, UnityEngine.Quaternion.identity);
+                // Store a reference to the BackgroundTile component
+                dirtTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
+            }
+        }
+    }
+
+    private void GenerateChocolateTiles()
+    {
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            if (boardLayout[i].tileKind == TileKind.Chocolate)
+            {
+                // Set the position for the lock tile
+                UnityEngine.Vector2 tempPosition = new UnityEngine.Vector2(boardLayout[i].x, boardLayout[i].y);
+                // Instantiate the breakable tile prefab at the designated position
+                GameObject tile = Instantiate(chocolateTilePrefab, tempPosition, UnityEngine.Quaternion.identity);
+                // Store a reference to the BackgroundTile component
+                chocolateTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
+            }
+        }
+    }
+
     // Set up the board by instantiating background tiles and randomly placing dots
     private void SetUp()
     {
@@ -169,13 +229,22 @@ public class Board : MonoBehaviour
         // Generate breakable tiles on the board (if applicable, e.g., destructible tiles)
         GenerateBreakableTiles();
 
+        // Generate lock tiles on the board (if applicable, e.g., locking a fruit from being moved)
+        GenerateLockTiles();
+
+        // Generate dirt tiles on the board (if applicable, e.g., dirt taking up board space)
+        GenerateDirtTiles();
+
+        // Generate dirt tiles on the board (if applicable, e.g., dirt taking up board space)
+        GenerateChocolateTiles();
+
         // Loop through each column (i) and each row (j) to place tiles and dots
         for (int i = 0; i < width; i++)
         { // Loop through each column
             for (int j = 0; j < height; j++)
             { // Loop through each row
               // Check if the current space is not a blank space (i.e., it can hold a tile and dot)
-                if (!blankSpaces[i, j])
+                if (!blankSpaces[i, j] && !dirtTiles[i, j] && !chocolateTiles[i, j])
                 {
                     // Calculate the position for the tile and dot based on the column (i) and row (j) indices
                     // Offset is added to vertical positioning to ensure proper placement
@@ -394,8 +463,6 @@ public class Board : MonoBehaviour
         // Check if the dot at the given position is marked as "matched"
         if (allDots[column, row].GetComponent<Dot>().isMatched)
         {
-
-
             // Check if there is a breakable tile at the current position
             if (breakableTiles[column, row] != null)
             {
@@ -408,6 +475,20 @@ public class Board : MonoBehaviour
                     breakableTiles[column, row] = null; // Nullify the reference if the tile is destroyed
                 }
             }
+            // Check if there is a lock tile at the current position
+            if (lockTiles[column, row] != null)
+            {
+                // Apply damage to the lock tile (e.g., it may get destroyed after several hits)
+                lockTiles[column, row].TakeDamage(1);
+
+                // If the breakable tile has no hit points left, remove the reference to it from the board
+                if (lockTiles[column, row].hitPoints <= 0)
+                {
+                    lockTiles[column, row] = null; // Nullify the reference if the tile is destroyed
+                }
+            }
+            // DamageDirt(column, row);
+            // DamageChocolate(column, row);
             // If a GoalManager is present, check if the current dot's tag matches any goals
             if (goalManager != null)
             {
@@ -459,6 +540,102 @@ public class Board : MonoBehaviour
         StartCoroutine(DecreaseRowCo2()); // Start coroutine to handle row adjustments after destruction
     }
 
+    /* private void DamageDirt(int column, int row)
+    {
+        if (column > 0)
+        {
+            if (dirtTiles[column - 1, row])
+            {
+                dirtTiles[column - 1, row].TakeDamage(1);
+                if (dirtTiles[column - 1, row].hitPoints <= 0)
+                {
+                    dirtTiles[column - 1, row] = null;
+                }
+            }
+        }
+        if (column < width - 1)
+        {
+            dirtTiles[column + 1, row].TakeDamage(1);
+            if (dirtTiles[column + 1, row])
+            {
+                if (dirtTiles[column + 1, row].hitPoints <= 0)
+                {
+                    dirtTiles[column + 1, row] = null;
+                }
+            }
+        }
+        if (row > 0)
+        {
+            dirtTiles[column, row - 1].TakeDamage(1);
+            if (dirtTiles[column, row - 1])
+            {
+                if (dirtTiles[column, row - 1].hitPoints <= 0)
+                {
+                    dirtTiles[column, row - 1] = null;
+                }
+            }
+        }
+        if (row < height - 1)
+        {
+            dirtTiles[column, row + 1].TakeDamage(1);
+            if (dirtTiles[column, row + 1])
+            {
+                if (dirtTiles[column, row + 1].hitPoints <= 0)
+                {
+                    dirtTiles[column, row + 1] = null;
+                }
+            }
+        }
+    }
+
+    private void DamageChocolate(int column, int row)
+    {
+        if (column > 0)
+        {
+            if (chocolateTiles[column - 1, row])
+            {
+                chocolateTiles[column - 1, row].TakeDamage(1);
+                if (chocolateTiles[column - 1, row].hitPoints <= 0)
+                {
+                    chocolateTiles[column - 1, row] = null;
+                }
+            }
+        }
+        if (column < width - 1)
+        {
+            chocolateTiles[column + 1, row].TakeDamage(1);
+            if (chocolateTiles[column + 1, row])
+            {
+                if (chocolateTiles[column + 1, row].hitPoints <= 0)
+                {
+                    chocolateTiles[column + 1, row] = null;
+                }
+            }
+        }
+        if (row > 0)
+        {
+            chocolateTiles[column, row - 1].TakeDamage(1);
+            if (chocolateTiles[column, row - 1])
+            {
+                if (chocolateTiles[column, row - 1].hitPoints <= 0)
+                {
+                    chocolateTiles[column, row - 1] = null;
+                }
+            }
+        }
+        if (row < height - 1)
+        {
+            chocolateTiles[column, row + 1].TakeDamage(1);
+            if (chocolateTiles[column, row + 1])
+            {
+                if (chocolateTiles[column, row + 1].hitPoints <= 0)
+                {
+                    chocolateTiles[column, row + 1] = null;
+                }
+            }
+        }
+    } */
+
     // Coroutine to handle adjusting rows when dots are destroyed
     private IEnumerator DecreaseRowCo2()
     {
@@ -468,7 +645,7 @@ public class Board : MonoBehaviour
             for (int j = 0; j < height; j++)
             {
                 // Check for blank spaces and null dots
-                if (!blankSpaces[i, j] && allDots[i, j] == null)
+                if (!blankSpaces[i, j] && !dirtTiles[i, j] && allDots[i, j] == null && !chocolateTiles[i, j])
                 {
                     // Move dots down to fill the empty space
                     for (int k = j + 1; k < height; k++)
@@ -496,7 +673,7 @@ public class Board : MonoBehaviour
             for (int j = 0; j < height; j++)
             { // Iterate through each row
                 // Check for empty positions that are not blank spaces
-                if (allDots[i, j] == null && !blankSpaces[i, j])
+                if (allDots[i, j] == null && !blankSpaces[i, j] && !dirtTiles[i, j] && !chocolateTiles[i, j])
                 {
                     // Set the new position for the dot
                     UnityEngine.Vector2 tempPosition = new UnityEngine.Vector2(i, j + offSet);
@@ -693,7 +870,7 @@ public class Board : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                if (!blankSpaces[i, j]) // Only place dots in non-blank spaces
+                if (!blankSpaces[i, j] && !dirtTiles[i, j] && !chocolateTiles[i, j]) // Only place dots in non-blank spaces
                 {
                     int pieceToUse = Random.Range(0, newBoard.Count); // Randomly select a new dot
                     int maxIterations = 0; // Counter to prevent infinite loops when checking for adjacent matches
