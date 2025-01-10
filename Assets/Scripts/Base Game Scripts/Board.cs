@@ -23,6 +23,12 @@ public enum TileKind
     Normal     // A standard, unbreakable tile
 }
 
+[System.Serializable]
+public class MatchType {
+    public int type;
+    public string color;
+}
+
 // Class to represent a tile with its position and type
 [System.Serializable]
 public class TileType
@@ -34,12 +40,18 @@ public class TileType
 
 public class Board : MonoBehaviour
 {
+    [Header("Scriptable Object Settings")]
+    public int[] scoreGoals; // The score goals required to pass the level
+    public World world; // Reference to the World object that contains all levels
+
     [Header("Board Settings")]
     // The current state of the game, determining whether the player can interact or not
     public GameState currentState = GameState.move; // The game is ready for player movement by default
     public int width; // The number of columns on the board
     public int height; // The number of rows on the board
     public int offSet; // Offset used to position tiles correctly on the board
+
+    [Header("Prefab Settings")]
     public GameObject tilePrefab; // Prefab used to create background tiles
     public GameObject breakableTilePrefab; // Prefab used to create breakable tiles
     private bool[,] blankSpaces; // 2D array used to track which spaces are blank (empty)
@@ -52,6 +64,9 @@ public class Board : MonoBehaviour
     public int basePieceValue = 20; // Base score value for each dot, used for scoring
     public GameObject[] dots; // Array of dot prefabs, each representing a different type of dot
     public GameObject[,] allDots; // 2D array that holds all the dots currently placed on the board
+
+    [Header("Match Settings")]
+    public MatchType matchType;
     public TileType[] boardLayout; // Defines the layout of the board (including background tiles, blank spaces, etc.)
     private FindMatches findMatches; // Reference to the FindMatches script used for detecting matching dots
     private int streakValue = 1; // Multiplier for consecutive matches (combo streak)
@@ -60,8 +75,6 @@ public class Board : MonoBehaviour
     private GoalManager goalManager; // Reference to the GoalManager responsible for managing and updating the game goals
 
     [Header("Level Settings")]
-    public int[] scoreGoals; // The score goals required to pass the level
-    public World world; // Reference to the World object that contains all levels
     public int level; // The current level the player is on
 
     // This method runs when the Board script is first initialized
@@ -268,12 +281,15 @@ public class Board : MonoBehaviour
     }
 
     // Determine if the current matches are in a single row or column
-    private int ColumnOrRow()
+    private MatchType ColumnOrRow()
     {
         List<GameObject> matchCopy = findMatches.currentMatches as List<GameObject>;
+        matchType.type = 0;
+        matchType.color = "";
         for (int i = 0; i < matchCopy.Count; i++)
         {
             Dot thisDot = matchCopy[i].GetComponent<Dot>();
+            string color = matchCopy[i].tag;
             int column = thisDot.column;
             int row = thisDot.row;
             int columnMatch = 0;
@@ -285,53 +301,37 @@ public class Board : MonoBehaviour
                 {
                     continue;
                 }
-                if (nextDot.column == thisDot.column && nextDot.CompareTag(thisDot.tag))
+                if (nextDot.column == thisDot.column && nextDot.tag == color)
                 {
                     columnMatch++;
                 }
-                if (nextDot.row == thisDot.row && nextDot.CompareTag(thisDot.tag))
+                if (nextDot.row == thisDot.row && nextDot.tag == color)
                 {
                     rowMatch++;
                 }
             }
             if (columnMatch == 4 || rowMatch == 4)
             {
-                return 1;
+                matchType.type = 1;
+                matchType.color = color;
+                return matchType;
             }
-            if (columnMatch == 2 && rowMatch == 2)
+            else if (columnMatch == 2 && rowMatch == 2)
             {
-                return 2;
+                matchType.type = 3;
+                matchType.color = color;
+                return matchType;
             }
-            if (columnMatch == 3 || rowMatch == 3)
+            else if (columnMatch == 3 || rowMatch == 3)
             {
-                return 3;
+                matchType.type = 3;
+                matchType.color = color;
+                return matchType;
             }
         }
-        return 0;
-        /* int numberHorizontal = 0; // Counter for horizontal matches
-        int numberVertical = 0; // Counter for vertical matches
-        Dot firstPiece = findMatches.currentMatches[0].GetComponent<Dot>(); // Get the first matched dot
-
-        if (firstPiece != null)
-        {
-            // Iterate through all matched pieces to count their orientation
-            foreach (GameObject currentPiece in findMatches.currentMatches)
-            {
-                Dot dot = currentPiece.GetComponent<Dot>();
-                // Increment horizontal count if dots are in the same row
-                if (dot.row == firstPiece.row)
-                {
-                    numberHorizontal++;
-                }
-                // Increment vertical count if dots are in the same column
-                if (dot.column == firstPiece.column)
-                {
-                    numberVertical++;
-                }
-            }
-        }
-        // Return true if there are five pieces in a row or column
-        return numberVertical == 5 || numberHorizontal == 5; */
+        matchType.type = 0;
+        matchType.color = "";
+        return matchType;
     }
 
     // Check if any bombs need to be created based on current matches
@@ -339,144 +339,53 @@ public class Board : MonoBehaviour
     {
         if (findMatches.currentMatches.Count > 3)
         {
-            int typeOfMatch = ColumnOrRow();
-            if (typeOfMatch == 1)
+            MatchType typeOfMatch = ColumnOrRow();
+            if (typeOfMatch.type == 1)
             {
                 // If matches are in a line
-                if (currentDot != null)
+                if (currentDot != null && currentDot.isMatched && currentDot.tag == typeOfMatch.color)
                 {
                     // Create a color bomb if the current dot is matched and not already a color bomb
-                    if (currentDot.isMatched)
+                    currentDot.isMatched = false; // Reset matched status
+                    currentDot.MakeColorBomb(); // Create a color bomb
+                } 
+                else
+                { // Check the other dot in case it is matched
+                    if (currentDot.otherDot != null)
                     {
-                        if (!currentDot.isColorBomb)
+                        Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
+                        if (otherDot.isMatched && otherDot.tag == typeOfMatch.color)
                         {
-                            currentDot.isMatched = false; // Reset matched status
-                            currentDot.MakeColorBomb(); // Create a color bomb
-                        }
-                    }
-                    else
-                    { // Check the other dot in case it is matched
-                        if (currentDot.otherDot != null)
-                        {
-                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
-                            if (otherDot.isMatched)
-                            {
-                                if (!otherDot.isColorBomb)
-                                {
-                                    otherDot.isMatched = false; // Reset matched status
-                                    otherDot.MakeColorBomb(); // Create a color bomb
-                                }
-                            }
+                            otherDot.isMatched = false; // Reset matched status
+                            otherDot.MakeColorBomb(); // Create a color bomb
                         }
                     }
                 }
             }
-            else if (typeOfMatch == 2)
+            else if (typeOfMatch.type == 2)
             {
                 // If matches are not in a line, check for adjacent bomb creation
-                if (currentDot != null)
+                if (currentDot != null && currentDot.isMatched && currentDot.tag == typeOfMatch.color)
                 {
                     // Create an adjacent bomb if the current dot is matched and not already an adjacent bomb
-                    if (currentDot.isMatched)
+                    currentDot.isMatched = false; // Reset matched status
+                    currentDot.MakeAdjacentBomb(); // Create an adjacent bomb
+                }
+                else if (currentDot.otherDot != null)
+                { // Check the other dot for adjacent bomb creation
+                    Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
+                    if (otherDot.isMatched && otherDot.tag == typeOfMatch.color)
                     {
-                        if (!currentDot.isAdjacentBomb)
-                        {
-                            currentDot.isMatched = false; // Reset matched status
-                            currentDot.MakeAdjacentBomb(); // Create an adjacent bomb
-                        }
-                    }
-                    else
-                    { // Check the other dot for adjacent bomb creation
-                        if (currentDot.otherDot != null)
-                        {
-                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
-                            if (otherDot.isMatched)
-                            {
-                                if (!otherDot.isAdjacentBomb)
-                                {
-                                    otherDot.isMatched = false; // Reset matched status
-                                    otherDot.MakeAdjacentBomb(); // Create an adjacent bomb
-                                }
-                            }
-                        }
+                        otherDot.isMatched = false; // Reset matched status
+                        otherDot.MakeAdjacentBomb(); // Create an adjacent bomb
                     }
                 }
             }
-            else if (typeOfMatch == 3)
+            else if (typeOfMatch.type == 3)
             {
-                findMatches.CheckBombs(); // Check for any bomb effects based on matches
+                findMatches.CheckBombs(typeOfMatch); // Check for any bomb effects based on matches
             }
         }
-        /* Handle bomb creation for specific match counts
-        if (findMatches.currentMatches.Count == 4 || findMatches.currentMatches.Count == 7)
-        {
-            findMatches.CheckBombs(); // Check for any bomb effects based on matches
-        }
-
-        // Check for potential color bomb creation based on the number of matches
-        if (findMatches.currentMatches.Count == 5 || findMatches.currentMatches.Count == 8)
-        {
-            if (ColumnOrRow())
-            { // If matches are in a line
-                if (currentDot != null)
-                {
-                    // Create a color bomb if the current dot is matched and not already a color bomb
-                    if (currentDot.isMatched)
-                    {
-                        if (!currentDot.isColorBomb)
-                        {
-                            currentDot.isMatched = false; // Reset matched status
-                            currentDot.MakeColorBomb(); // Create a color bomb
-                        }
-                    }
-                    else
-                    { // Check the other dot in case it is matched
-                        if (currentDot.otherDot != null)
-                        {
-                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
-                            if (otherDot.isMatched)
-                            {
-                                if (!otherDot.isColorBomb)
-                                {
-                                    otherDot.isMatched = false; // Reset matched status
-                                    otherDot.MakeColorBomb(); // Create a color bomb
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            { // If matches are not in a line, check for adjacent bomb creation
-                if (currentDot != null)
-                {
-                    // Create an adjacent bomb if the current dot is matched and not already an adjacent bomb
-                    if (currentDot.isMatched)
-                    {
-                        if (!currentDot.isAdjacentBomb)
-                        {
-                            currentDot.isMatched = false; // Reset matched status
-                            currentDot.MakeAdjacentBomb(); // Create an adjacent bomb
-                        }
-                    }
-                    else
-                    { // Check the other dot for adjacent bomb creation
-                        if (currentDot.otherDot != null)
-                        {
-                            Dot otherDot = currentDot.otherDot.GetComponent<Dot>();
-                            if (otherDot.isMatched)
-                            {
-                                if (!otherDot.isAdjacentBomb)
-                                {
-                                    otherDot.isMatched = false; // Reset matched status
-                                    otherDot.MakeAdjacentBomb(); // Create an adjacent bomb
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } */
     } 
 
     // Destroy matched dots at the specified column and row
@@ -485,11 +394,7 @@ public class Board : MonoBehaviour
         // Check if the dot at the given position is marked as "matched"
         if (allDots[column, row].GetComponent<Dot>().isMatched)
         {
-            // If there are 4 or more matched dots (a special match), check if bombs should be created
-            if (findMatches.currentMatches.Count >= 4)
-            {
-                CheckToMakeBombs(); // Create bombs or power-ups for larger matches
-            }
+
 
             // Check if there is a breakable tile at the current position
             if (breakableTiles[column, row] != null)
@@ -535,6 +440,11 @@ public class Board : MonoBehaviour
     // Loop through the entire board and destroy all matched dots
     public void DestroyMatches()
     {
+        // If there are 4 or more matched dots (a special match), check if bombs should be created
+        if (findMatches.currentMatches.Count >= 4)
+        {
+            CheckToMakeBombs(); // Create bombs or power-ups for larger matches
+        }        
         for (int i = 0; i < width; i++)
         { // Iterate through each column
             for (int j = 0; j < height; j++)
@@ -578,31 +488,6 @@ public class Board : MonoBehaviour
         StartCoroutine(FillBoardCo()); // Start coroutine to fill the board with new dots
     }
 
-    // Coroutine to handle adjusting rows when dots are destroyed
-    private IEnumerator DecreaseRowCo()
-    {
-        int nullCount = 0; // Count of null dots in a column
-        for (int i = 0; i < width; i++)
-        { // Iterate through each column
-            for (int j = 0; j < height; j++)
-            { // Iterate through each row
-                if (allDots[i, j] == null)
-                {
-                    nullCount++; // Increment count of null positions
-                }
-                else if (nullCount > 0)
-                {
-                    // Move existing dots down by the number of nulls above them
-                    allDots[i, j].GetComponent<Dot>().row -= nullCount; // Update the row position of the dot
-                    allDots[i, j] = null; // Set the current position to null
-                }
-            }
-            nullCount = 0; // Reset null count for the next column
-        }
-        yield return new WaitForSeconds(refillDelay * 0.5f); // Wait for 0.4 seconds before refilling the board
-        StartCoroutine(FillBoardCo()); // Start coroutine to fill the board with new dots
-    }
-
     // Refill the board with new dots in null positions
     private void RefillBoard()
     {
@@ -636,6 +521,7 @@ public class Board : MonoBehaviour
     // Check if there are any matches currently present on the board
     private bool MatchesOnBoard()
     {
+        findMatches.FindAllMatches();
         for (int i = 0; i < width; i++)
         { // Iterate through each column
             for (int j = 0; j < height; j++)
@@ -661,6 +547,9 @@ public class Board : MonoBehaviour
         // Refill the board with new dots after clearing the matched dots
         RefillBoard();
 
+        // Wait briefly (0.2 seconds) before allowing the player to make moves again
+        yield return new WaitForSeconds(refillDelay);
+
         // Continuously check for new matches on the board until no more are found
         while (MatchesOnBoard())
         {
@@ -668,15 +557,9 @@ public class Board : MonoBehaviour
             streakValue++;
             // Destroy any new matches found on the board
             DestroyMatches();
-            // Wait briefly (0.2 seconds) before rechecking for any matches
-            yield return new WaitForSeconds(2 * refillDelay);
+            yield break;
         }
-
-        // After processing matches, clear the list of currently detected matches in the FindMatches component
-        findMatches.currentMatches.Clear();
-
-        // Wait briefly (0.2 seconds) before allowing the player to make moves again
-        yield return new WaitForSeconds(refillDelay);
+        currentDot = null;
 
         // If the board is deadlocked (no valid moves are available), shuffle the board to create new possibilities
         if (IsDeadlocked())
@@ -747,7 +630,7 @@ public class Board : MonoBehaviour
     public bool SwitchAndCheck(int column, int row, UnityEngine.Vector2 direction)
     {
         SwitchPieces(column, row, direction); // Swap the two dots
-                                              // Check if the swap resulted in a match
+        // Check if the swap resulted in a match
         if (CheckForMatches())
         {
             SwitchPieces(column, row, direction); // If a match is found, revert the swap

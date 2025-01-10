@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 // Class representing each dot on the board
 public class Dot : MonoBehaviour
@@ -78,15 +76,14 @@ public class Dot : MonoBehaviour
             if (board.allDots[column, row] != this.gameObject)
             {
                 board.allDots[column, row] = this.gameObject; // Update board array with the current dot
+                findMatches.FindAllMatches(); // Check for matches after moving
             }
-            findMatches.FindAllMatches(); // Check for matches after moving
         }
         else
         {
             // Directly set position if close enough to target
             tempPosition = new UnityEngine.Vector2(targetX, transform.position.y);
             transform.position = tempPosition; // Set to target position
-            board.allDots[column, row] = this.gameObject; // Update board reference with the current dot
         }
 
         // Move towards the target Y position
@@ -98,8 +95,8 @@ public class Dot : MonoBehaviour
             if (board.allDots[column, row] != this.gameObject)
             {
                 board.allDots[column, row] = this.gameObject; // Update board array with the current dot
+                findMatches.FindAllMatches(); // Check for matches after moving
             }
-            findMatches.FindAllMatches(); // Check for matches after moving
         }
         else
         {
@@ -152,7 +149,6 @@ public class Dot : MonoBehaviour
 
                 // Trigger the destruction of matched dots
                 board.DestroyMatches(); // Start the match destruction process
-                yield return new WaitForSeconds(.2f); // Wait for destruction to complete
             }
         }
     }
