@@ -54,8 +54,8 @@ public class Dot : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            isAdjacentBomb = true; // Set adjacent bomb flag to true
-            GameObject marker = Instantiate(adjacentMarker, transform.position, UnityEngine.Quaternion.identity);
+            isColorBomb = true; // Set adjacent bomb flag to true
+            GameObject marker = Instantiate(colorBomb, transform.position, UnityEngine.Quaternion.identity);
             marker.transform.parent = this.transform; // Set the adjacent bomb marker as a child of this dot
         }
     }
