@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 // Creates a new ScriptableObject called "Level" that can be added from the Unity editor
