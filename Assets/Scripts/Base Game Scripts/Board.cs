@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
 
 // Enum to represent the current state of the game
 public enum GameState
@@ -387,7 +384,7 @@ public class Board : MonoBehaviour
             }
             else if (columnMatch == 2 && rowMatch == 2)
             {
-                matchType.type = 3;
+                matchType.type = 2;
                 matchType.color = color;
                 return matchType;
             }

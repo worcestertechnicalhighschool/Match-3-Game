@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 // FadePanelController handles the animations for the fade-in and fade-out effects
