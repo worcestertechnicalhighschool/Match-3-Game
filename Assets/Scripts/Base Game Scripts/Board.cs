@@ -742,9 +742,12 @@ public class Board : MonoBehaviour
             Debug.Log("Deadlocked!!! :D"); // Log that the board was shuffled due to a deadlock situation
         }
 
-        // After all matches are cleared and the board is refilled or shuffled, set the game state back to 'move'
-        // This allows the player to start making moves again
-        currentState = GameState.move;
+        if (currentState != GameState.pause)
+        {
+            // After all matches are cleared and the board is refilled or shuffled, set the game state back to 'move'
+            // This allows the player to start making moves again
+            currentState = GameState.move;
+        }
 
         // Reset the streak value to 1, as the player starts a new sequence of moves
         streakValue = 1;
