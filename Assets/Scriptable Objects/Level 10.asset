@@ -1,0 +1,277 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5823813b152caa43a8e16a8262a1a06, type: 3}
+  m_Name: Level 10
+  m_EditorClassIdentifier: 
+  width: 9
+  height: 9
+  boardLayout:
+  - x: 0
+    y: 0
+    tileKind: 0
+  - x: 1
+    y: 0
+    tileKind: 0
+  - x: 2
+    y: 0
+    tileKind: 0
+  - x: 3
+    y: 0
+    tileKind: 0
+  - x: 4
+    y: 0
+    tileKind: 0
+  - x: 5
+    y: 0
+    tileKind: 0
+  - x: 6
+    y: 0
+    tileKind: 0
+  - x: 7
+    y: 0
+    tileKind: 0
+  - x: 8
+    y: 0
+    tileKind: 0
+  - x: 0
+    y: 1
+    tileKind: 0
+  - x: 1
+    y: 1
+    tileKind: 0
+  - x: 2
+    y: 1
+    tileKind: 0
+  - x: 3
+    y: 1
+    tileKind: 0
+  - x: 4
+    y: 1
+    tileKind: 0
+  - x: 5
+    y: 1
+    tileKind: 0
+  - x: 6
+    y: 1
+    tileKind: 0
+  - x: 7
+    y: 1
+    tileKind: 0
+  - x: 8
+    y: 1
+    tileKind: 0
+  - x: 0
+    y: 2
+    tileKind: 0
+  - x: 1
+    y: 2
+    tileKind: 0
+  - x: 2
+    y: 2
+    tileKind: 0
+  - x: 3
+    y: 2
+    tileKind: 0
+  - x: 4
+    y: 2
+    tileKind: 0
+  - x: 5
+    y: 2
+    tileKind: 0
+  - x: 6
+    y: 2
+    tileKind: 0
+  - x: 7
+    y: 2
+    tileKind: 0
+  - x: 8
+    y: 2
+    tileKind: 0
+  - x: 0
+    y: 3
+    tileKind: 0
+  - x: 1
+    y: 3
+    tileKind: 0
+  - x: 2
+    y: 3
+    tileKind: 0
+  - x: 3
+    y: 3
+    tileKind: 0
+  - x: 4
+    y: 3
+    tileKind: 0
+  - x: 5
+    y: 3
+    tileKind: 0
+  - x: 6
+    y: 3
+    tileKind: 0
+  - x: 7
+    y: 3
+    tileKind: 0
+  - x: 8
+    y: 3
+    tileKind: 0
+  - x: 0
+    y: 4
+    tileKind: 0
+  - x: 1
+    y: 4
+    tileKind: 0
+  - x: 2
+    y: 4
+    tileKind: 0
+  - x: 3
+    y: 4
+    tileKind: 0
+  - x: 4
+    y: 4
+    tileKind: 1
+  - x: 5
+    y: 4
+    tileKind: 0
+  - x: 6
+    y: 4
+    tileKind: 0
+  - x: 7
+    y: 4
+    tileKind: 0
+  - x: 8
+    y: 4
+    tileKind: 0
+  - x: 0
+    y: 5
+    tileKind: 0
+  - x: 1
+    y: 5
+    tileKind: 0
+  - x: 2
+    y: 5
+    tileKind: 0
+  - x: 3
+    y: 5
+    tileKind: 0
+  - x: 4
+    y: 5
+    tileKind: 0
+  - x: 5
+    y: 5
+    tileKind: 0
+  - x: 6
+    y: 5
+    tileKind: 0
+  - x: 7
+    y: 5
+    tileKind: 0
+  - x: 8
+    y: 5
+    tileKind: 0
+  - x: 0
+    y: 6
+    tileKind: 0
+  - x: 1
+    y: 6
+    tileKind: 0
+  - x: 2
+    y: 6
+    tileKind: 0
+  - x: 3
+    y: 6
+    tileKind: 0
+  - x: 4
+    y: 6
+    tileKind: 0
+  - x: 5
+    y: 6
+    tileKind: 0
+  - x: 6
+    y: 6
+    tileKind: 0
+  - x: 7
+    y: 6
+    tileKind: 0
+  - x: 8
+    y: 6
+    tileKind: 0
+  - x: 0
+    y: 7
+    tileKind: 0
+  - x: 1
+    y: 7
+    tileKind: 0
+  - x: 2
+    y: 7
+    tileKind: 0
+  - x: 3
+    y: 7
+    tileKind: 0
+  - x: 4
+    y: 7
+    tileKind: 0
+  - x: 5
+    y: 7
+    tileKind: 0
+  - x: 6
+    y: 7
+    tileKind: 0
+  - x: 7
+    y: 7
+    tileKind: 0
+  - x: 8
+    y: 7
+    tileKind: 0
+  - x: 0
+    y: 8
+    tileKind: 0
+  - x: 1
+    y: 8
+    tileKind: 0
+  - x: 2
+    y: 8
+    tileKind: 0
+  - x: 3
+    y: 8
+    tileKind: 0
+  - x: 4
+    y: 8
+    tileKind: 0
+  - x: 5
+    y: 8
+    tileKind: 0
+  - x: 6
+    y: 8
+    tileKind: 0
+  - x: 7
+    y: 8
+    tileKind: 0
+  - x: 8
+    y: 8
+    tileKind: 0
+  dots:
+  - {fileID: 4583171193960113888, guid: bed5af3301fcaa44ea82cd74fac6f99f, type: 3}
+  - {fileID: 5961274683975564150, guid: fca19b85f4f7487459361d9de8600e61, type: 3}
+  - {fileID: 5317090199219728830, guid: ea26f08c3bdfe5141a274902eaad62d7, type: 3}
+  - {fileID: 8682116403278553238, guid: 383dabb79a8f744469e264df7505782d, type: 3}
+  - {fileID: 8891640953318616448, guid: f3344a405f8f6064b8be984af2f329b7, type: 3}
+  - {fileID: 2318365741609268332, guid: df14d84f43225ba46a235b0963cb92ab, type: 3}
+  - {fileID: 6331728483860370602, guid: f254418782da37b4998289fc96f30c5f, type: 3}
+  scoreGoals: 643200004424010054c80100
+  endGameRequirements:
+    gameType: 0
+    counterValue: 55
+  levelGoals:
+  - numberNeeded: 80
+    numberCollected: 80
+    goalSprite: {fileID: 21300000, guid: d0ffc0c7e13b344bf8e762de4987fbed, type: 3}
+    matchValue: Breakable
