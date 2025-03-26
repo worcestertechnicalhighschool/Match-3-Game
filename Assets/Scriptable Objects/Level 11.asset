@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5823813b152caa43a8e16a8262a1a06, type: 3}
-  m_Name: Level 2
+  m_Name: Level 11
   m_EditorClassIdentifier: 
-  width: 8
-  height: 5
+  width: 4
+  height: 4
   boardLayout: []
   dots:
   - {fileID: 4583171193960113888, guid: bed5af3301fcaa44ea82cd74fac6f99f, type: 3}
-  - {fileID: 8891640953318616448, guid: f3344a405f8f6064b8be984af2f329b7, type: 3}
-  - {fileID: 5317090199219728830, guid: ea26f08c3bdfe5141a274902eaad62d7, type: 3}
   - {fileID: 5961274683975564150, guid: fca19b85f4f7487459361d9de8600e61, type: 3}
-  scoreGoals: f4010000dc050000d0070000
+  - {fileID: 5317090199219728830, guid: ea26f08c3bdfe5141a274902eaad62d7, type: 3}
+  - {fileID: 8682116403278553238, guid: 383dabb79a8f744469e264df7505782d, type: 3}
+  scoreGoals: c4090000881300004c1d0000
   endGameRequirements:
     gameType: 0
     counterValue: 15
   levelGoals:
-  - numberNeeded: 15
-    numberCollected: 23
-    goalSprite: {fileID: 21300000, guid: 1be08b59a06aea041a4792a12d1b71a1, type: 3}
-    matchValue: Blue
+  - numberNeeded: 20
+    numberCollected: 22
+    goalSprite: {fileID: 21300000, guid: bf5ba085dab1e244e85a6a61bfeb9253, type: 3}
+    matchValue: Green

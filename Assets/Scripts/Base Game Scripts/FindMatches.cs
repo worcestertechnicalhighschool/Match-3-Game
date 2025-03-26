@@ -50,16 +50,19 @@ public class FindMatches : MonoBehaviour
         {
             // Add all dots in the row of the first dot if it's a row bomb
             currentMatches = currentMatches.Union(GetRowPieces(dot1.row)).ToList();
+            board.BombRow(dot1.row);
         }
         if (dot2.isRowBomb)
         {
             // Add all dots in the row of the second dot if it's a row bomb
             currentMatches = currentMatches.Union(GetRowPieces(dot2.row)).ToList();
+            board.BombRow(dot2.row);
         }
         if (dot3.isRowBomb)
         {
             // Add all dots in the row of the third dot if it's a row bomb
             currentMatches = currentMatches.Union(GetRowPieces(dot3.row)).ToList();
+            board.BombRow(dot3.row);
         }
         return currentDots;
     }
@@ -72,16 +75,19 @@ public class FindMatches : MonoBehaviour
         {
             // Add all dots in the column of the first dot if it's a column bomb
             currentMatches = currentMatches.Union(GetColumnPieces(dot1.column)).ToList();
+            board.BombColumn(dot1.column);
         }
         if (dot2.isColumnBomb)
         {
             // Add all dots in the column of the second dot if it's a column bomb
             currentMatches = currentMatches.Union(GetColumnPieces(dot2.column)).ToList();
+            board.BombColumn(dot2.column);
         }
         if (dot3.isColumnBomb)
         {
             // Add all dots in the column of the third dot if it's a column bomb
             currentMatches = currentMatches.Union(GetColumnPieces(dot3.column)).ToList();
+            board.BombColumn(dot3.column);
         }
         return currentDots;
     }

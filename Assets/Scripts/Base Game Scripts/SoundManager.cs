@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -5,6 +6,7 @@ public class SoundManager : MonoBehaviour
     // Array of AudioSource components that hold different destruction sound clips
     public AudioSource[] destroyNoise;
     public AudioSource backgroundMusic;
+    public AudioSource timedMusic;
 
     void Start()
     {
@@ -27,7 +29,7 @@ public class SoundManager : MonoBehaviour
             backgroundMusic.volume = 1;
         }
     }
-
+    // Method to adjust the volume of the background music based on player preferences
     public void adjustVolume()
     {
         if (PlayerPrefs.HasKey("Sound"))
