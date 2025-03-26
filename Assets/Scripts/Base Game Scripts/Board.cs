@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 // Enum to represent the current state of the game
 public enum GameState
@@ -136,7 +137,7 @@ public class Board : MonoBehaviour
         blankSpaces = new bool[width, height]; // Initialize a 2D array to track which spaces are blank (no dots)
         allDots = new GameObject[width, height]; // Initialize a 2D array to hold references to the dots in each space on the board
         // Call SetUp() to initialize the board, place tiles, and randomly populate it with dots
-        SetUp(); 
+        SetUp();
         currentState = GameState.pause; // Initially pause the game (waiting for player to start or resume)
     }
 
@@ -454,6 +455,42 @@ public class Board : MonoBehaviour
         }
     } 
 
+    public void BombRow(int row)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (dirtTiles[i, j] != null)
+                {
+                    dirtTiles[i, row].TakeDamage(1);
+                    if (dirtTiles[i, row].hitPoints <= 0)
+                    {
+                        dirtTiles[i, row] = null;
+                    }
+                }
+            }
+        }
+    }
+
+    public void BombColumn(int column)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (dirtTiles[i, j] != null)
+                {
+                    dirtTiles[column, i].TakeDamage(1);
+                    if (dirtTiles[column, i].hitPoints <= 0)
+                    {
+                        dirtTiles[column, i] = null;
+                    }
+                }
+            }
+        }
+    }
+
     // Destroy matched dots at the specified column and row
     private void DestroyMatchesAt(int column, int row)
     {
@@ -484,8 +521,15 @@ public class Board : MonoBehaviour
                     lockTiles[column, row] = null; // Nullify the reference if the tile is destroyed
                 }
             }
-            // DamageDirt(column, row);
-            // DamageChocolate(column, row);
+            if (dirtTiles[column, row] != null)
+            {
+                DamageDirt(column , row);
+            }
+            if (chocolateTiles[column, row] != null)
+            {
+                DamageChocolate(column, row);
+            }
+
             // If a GoalManager is present, check if the current dot's tag matches any goals
             if (goalManager != null)
             {
@@ -537,13 +581,14 @@ public class Board : MonoBehaviour
         StartCoroutine(DecreaseRowCo2()); // Start coroutine to handle row adjustments after destruction
     }
 
-    /* private void DamageDirt(int column, int row)
+    private void DamageDirt(int column, int row)
     {
         if (column > 0)
         {
+            dirtTiles[column - 1, row].TakeDamage(1);
             if (dirtTiles[column - 1, row])
             {
-                dirtTiles[column - 1, row].TakeDamage(1);
+                
                 if (dirtTiles[column - 1, row].hitPoints <= 0)
                 {
                     dirtTiles[column - 1, row] = null;
@@ -631,7 +676,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
-    } */
+    }
 
     // Coroutine to handle adjusting rows when dots are destroyed
     private IEnumerator DecreaseRowCo2()
@@ -757,12 +802,15 @@ public class Board : MonoBehaviour
     // Switch the positions of two dots on the board
     private void SwitchPieces(int column, int row, UnityEngine.Vector2 direction)
     {
-        // Temporarily hold the dot at the new position
-        GameObject holder = allDots[column + (int)direction.x, row + (int)direction.y] as GameObject;
-        // Move the dot from its original position to the new position
-        allDots[column + (int)direction.x, row + (int)direction.y] = allDots[column, row];
-        // Place the dot from the new position back to the original position
-        allDots[column, row] = holder;
+        if (allDots[column + (int)direction.x, row + (int)direction.y] != null)
+        {
+            // Temporarily hold the dot at the new position
+            GameObject holder = allDots[column + (int)direction.x, row + (int)direction.y] as GameObject;
+            // Move the dot from its original position to the new position
+            allDots[column + (int)direction.x, row + (int)direction.y] = allDots[column, row];
+            // Place the dot from the new position back to the original position
+            allDots[column, row] = holder;
+        }
     }
 
     // Check if there are any valid matches (3 or more dots in a row/column)
