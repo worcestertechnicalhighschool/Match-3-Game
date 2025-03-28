@@ -6,7 +6,6 @@ public class SoundManager : MonoBehaviour
     // Array of AudioSource components that hold different destruction sound clips
     public AudioSource[] destroyNoise;
     public AudioSource backgroundMusic;
-    public AudioSource timedMusic;
 
     void Start()
     {
